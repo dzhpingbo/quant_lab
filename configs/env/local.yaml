@@ -1,0 +1,39 @@
+# 本地开发环境配置
+env: local
+
+# 路径配置
+paths:
+  data_root: ./data
+  raw_data: ./data/raw
+  staging_data: ./data/staging
+  qlib_bin: ./data/qlib_bin
+  features_cache: ./data/features_cache
+  dataset_cache: ./data/dataset_cache
+  external_data: ./data/external
+  legacy_quant_root: ./data/external/legacy_quant
+  legacy_astock: ./data/external/legacy_quant/AStock
+  legacy_astock_daily: ./data/external/legacy_quant/AStock/20100101_20260407
+  legacy_nsdq: ./data/external/legacy_quant/NSDQStock
+  legacy_backtest_results: ./data/external/legacy_quant/backtest_results
+  outputs: ./outputs
+  experiments: ./experiments
+
+# 日志配置
+logging:
+  level: DEBUG
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}"
+  sink: ./outputs/logs/quant_lab_{time:YYYYMMDD}.log
+  rotation: "10 MB"
+  retention: "30 days"
+
+# 计算配置
+compute:
+  n_jobs: -1  # -1 means use all cores
+  chunk_size: 10000
+  memory_limit: 8G
+
+# 缓存配置
+cache:
+  enabled: true
+  backend: disk  # disk or memory
+  ttl: 3600  # seconds

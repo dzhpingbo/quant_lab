@@ -1,0 +1,24 @@
+# 科创50成分股股票池（科创板核心）
+universe_id: cn_kc50
+market: cn
+description: "科创50指数成分股 - 科创板核心资产"
+
+filters:
+  remove_st: true
+  remove_suspended: true
+  remove_delisted: true
+  min_listing_days: 60
+
+# 指数成分
+index_components:
+  - SH000688  # 科创50
+
+# 特殊说明
+notes: |
+  科创板特点：
+  1. 涨跌幅限制20%
+  2. T+1交易
+  3. 前5日无涨跌幅限制
+  4. 50万资产门槛
+
+update_frequency: daily

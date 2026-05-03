@@ -1,0 +1,67 @@
+你是新的 Codex 用户/账号，准备接手本机 quant_lab 项目的历史量化研究。请在开始任何新任务前先读取本地交接文件，不要假设你能看到旧聊天。
+
+工作区：
+E:\dzhwork\quant\quant_lab
+
+必须先读：
+1. docs\quant_lab_project_handoff_20260418.md
+2. docs\codex_handoff_quant_lab_full_audit_20260418_175017.md
+3. docs\codex_user_switch_handoff_20260418.md
+4. docs\report_generation_standard.md
+5. 如果任务涉及 588200Pool，读取 C:\Users\Administrator\.codex\skills\588200-pool\SKILL.md 和 docs\588200pool_context_handoff_20260415.md
+
+本地事实来源优先级：
+1. 当前本地文件系统中的 docs、outputs、scripts、external_repos。
+2. outputs 下的 report、checkpoint、best_config、summary CSV。
+3. 脚本中的 argparse 默认值、日志和 checkpoint。
+4. 旧聊天只用于补足用户偏好、否定某个方案的原因、或历史操作顺序，不要把旧聊天当作覆盖本地文件的事实来源。
+
+已知环境注意事项：
+- 当前项目不是 git 仓库，不能用 git 历史恢复事实。
+- data\external_repos 不存在；外部仓库归档在 external_repos。
+- rg.exe 在这台 PowerShell 里可能会报 Access is denied；可改用 Get-ChildItem 和 Select-String。
+- 旧交接记录显示测试通常要设置 $env:PYTHONPATH='.'。
+- 旧交接记录显示 qlib 可能未安装，运行 Qlib 前先检查 python -c "import qlib"。
+- 交易研究口径通常是收盘后生成信号，下一交易日开盘执行。
+- 所有策略输出都是研究结果，不是投资建议。
+
+历史主线：
+1. 项目目标从分析 quant_lab 框架和因子库，扩展到 588200Pool、因子组合、TD9/神奇九转、安全策略、外部因子库复用、美股 QQQ/QLD/TQQQ 和全资产 TD9 搜索。
+2. D:\dzhwork\quant 已镜像到 data\external\legacy_quant，映射在 docs\data_migration_map.md。
+3. 588200Pool 相关默认训练期通常是 2022-10-26 到 2024-12-31，样本外从 2025-01-01 开始。
+4. 旧 588200 输出多停在 2026-04-08；实时 TD9/MA 输出到 2026-04-15；美股相关输出到 2026-04-17。
+5. 外部因子复用层已登记 452 个外部 panel 因子名，包括 82 个 WorldQuant Alpha101、360 个 Qlib Alpha360、10 个 GTJA Alpha191。JoinQuant 和 RiceQuant 的完整平台数据需要授权。
+6. 用户要求长跑必须有后台进程、日志、checkpoint 和可恢复 summary CSV。
+7. 用户要求报告必须解释策略名称、指标含义、买点、卖点、执行假设、样本内/样本外、限制和使用方法。
+
+关键本地输出：
+- 588200 股票池优化：outputs\588200_strategy_optimization\20260412_064816
+- 588200 泛化策略：outputs\588200_generalized_strategy\full_20260412_132729
+- 588200 长跑多因子：outputs\588200_longrun_factor_strategy\combo_20260412_224013
+- 588200 MA 交叉：outputs\588200_ma_crossover_strategy\ma_cross_20260413_152740
+- 588200 横盘过滤：outputs\588200_sideways_filtered_strategy\sideways_20260413_164557
+- 588200 TD9 指标组合：outputs\588200_td9_indicator_combo\td9_combo_stage2_20260415_213550
+- 588200 实时 TD9/MA：outputs\588200_td9_ma_simple\td9_ma_fast_20260415_234750
+- 外部因子导入复用：outputs\factor_library_imports
+- 美股全策略搜索：outputs\us_leveraged_etf_full_strategy\full_us_20260416_010500
+- 美股 walk-forward：outputs\us_leveraged_etf_walk_forward\wf_us_20260417_5y
+- 美股在线策略：outputs\us_leveraged_etf_vectorbt_online_strategies\vbt_online_20260418_001937
+- 美股动量组合：outputs\us_leveraged_etf_momentum_combo\momentum_combo_20260418_084322
+- 美股 TD9 全资产：outputs\us_td9_all_assets\td9_all_assets_20260418_095256
+
+接手后的默认做法：
+1. 先确认用户当前要继续哪条线：588200Pool、美股 QLD/TQQQ、外部因子复用、Qlib 接入、还是项目文档整理。
+2. 先读对应输出目录的 report.md/report_*.md、best_config.json、summary CSV、checkpoint_*.md。
+3. 若要运行长任务，使用后台进程、stdout/stderr 日志和 checkpoint，不要只跑前台短命令。
+4. 若要生成新报告，严格遵守 docs\report_generation_standard.md。
+5. 若要给最新信号，必须先更新数据或明确说明使用的是哪个本地截止日期。
+6. 若遇到收益异常高的基金/CEF/指数结果，先检查复权、分红、数据拼接和幸存者偏差。
+
+需要单独补聊天上下文的情况：
+- 需要知道用户为什么觉得某个结果“太弱”或“不可接受”。
+- 需要用户风险偏好、真实交易资金约束、税费和账户限制。
+- 需要重放所有历史 Codex 操作的完整先后顺序。
+- 需要复盘外部网页/论文搜索时的过程性判断，而不是只看报告里的来源 URL。
+- 需要理解某次中途超时、重启、追问背后的交互背景。
+
+请从本地文件开始，回答时标明信息来源是“本地文件”还是“需要聊天上下文补充”。如要改代码或生成报告，请直接在当前工作区落地文件，并在结尾列出改动文件和验证结果。

@@ -1,0 +1,68 @@
+{
+  "run_id": "run_20260502_220641",
+  "run_dir": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\run_20260502_220641",
+  "zip_path": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\us_stock_selection_quant_lab_v8_2_year_stability_20260502_220641.zip",
+  "run_summary": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\run_20260502_220641\\RUN_SUMMARY.md",
+  "selected_report": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\run_20260502_220641\\selected_report.md",
+  "final_verdict": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\run_20260502_220641\\final_verdict.json",
+  "next_steps": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\run_20260502_220641\\next_steps.md",
+  "max_csv_mb": 5.0,
+  "include_xlsx": false,
+  "exported": {
+    "small_tables": {
+      "benchmark": {
+        "source": "outputs\\us_stock_selection\\run_20260502_220641\\v8_2_year_stability\\v8_2_benchmark_comparison.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\run_20260502_220641\\small_tables\\benchmark.csv",
+        "mode": "copied"
+      },
+      "attribution": {
+        "source": "outputs\\us_stock_selection\\run_20260502_220641\\v8_2_year_stability\\v8_2_ticker_contribution.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\run_20260502_220641\\small_tables\\attribution.csv",
+        "mode": "copied"
+      },
+      "stress_test": {
+        "source": "outputs\\us_stock_selection\\run_20260502_220641\\v8_2_year_stability\\v8_2_execution_stress_results.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\run_20260502_220641\\small_tables\\stress_test.csv",
+        "mode": "copied"
+      },
+      "yearly_return": {
+        "source": "outputs\\us_stock_selection\\run_20260502_220641\\v8_2_year_stability\\v8_2_annual_return_table.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\run_20260502_220641\\small_tables\\yearly_return.csv",
+        "mode": "copied"
+      },
+      "holdings_summary": {
+        "source": "outputs\\us_stock_selection\\run_20260502_220641\\v8_2_year_stability\\v8_2_monthly_holdings_by_strategy.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\run_20260502_220641\\small_tables\\holdings_summary.csv",
+        "mode": "summarized_large_csv"
+      }
+    },
+    "skipped": [],
+    "xlsx": [
+      "outputs\\us_stock_selection\\run_20260502_220641\\reports\\us_stock_selection_v8_2_summary.xlsx (not copied; include_xlsx=false)"
+    ],
+    "key_metrics": "docs\\chatgpt_bridge\\runs\\run_20260502_220641\\key_metrics.csv"
+  },
+  "key_metrics_rows": 50,
+  "csv_inventory_rows": 11,
+  "bridge_run_dir": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\run_20260502_220641",
+  "bridge_run_dir_repo_relative": "docs\\chatgpt_bridge\\runs\\run_20260502_220641",
+  "review_packet": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\run_20260502_220641\\REVIEW_PACKET.md",
+  "review_packet_repo_relative": "docs\\chatgpt_bridge\\runs\\run_20260502_220641\\REVIEW_PACKET.md",
+  "latest_md": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\LATEST.md",
+  "latest_md_repo_relative": "docs\\chatgpt_bridge\\LATEST.md",
+  "manifest_path": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\latest_run_manifest.json",
+  "manifest_path_repo_relative": "docs\\chatgpt_bridge\\latest_run_manifest.json",
+  "updated_at": "2026-05-03T06:19:03",
+  "git": {
+    "git_push_requested": true,
+    "is_git_repo": false,
+    "has_remote": false,
+    "commit_attempted": false,
+    "commit_success": false,
+    "push_attempted": false,
+    "push_success": false,
+    "message": "Not a git repository; bridge generated locally only.",
+    "stdout": "",
+    "stderr": "fatal: not a git repository (or any of the parent directories): .git\n"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "stage": "v9_growth_pool_pre_research",
+  "frozen_mainline": "Alpha360 + LGBModel + label_5d + top5_ytdcap80p_derisk100p",
+  "allow_enter_v10": false,
+  "classification": "not_v10_ready_growth_pool_sensitive",
+  "pool_a_plus_small_growth_cagr": 0.0725844348490905,
+  "pool_a_plus_small_growth_calmar": 0.1993024821748817,
+  "pool_a_plus_small_growth_single_year_share": 0.536167754777832,
+  "pool_a_plus_small_growth_top_ticker_share": 0.1152851579662346,
+  "effective_small_growth_count": 18,
+  "excluded_ticker_count": 13,
+  "no_nasdaq100_expansion": true,
+  "no_sp500_expansion": true,
+  "no_full_market_expansion": true,
+  "no_strategy_search": true,
+  "no_trading_claim": true
+}

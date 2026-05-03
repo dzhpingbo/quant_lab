@@ -1,0 +1,39 @@
+# 美股市场配置
+market: us
+market_name: "US Equity"
+currency: USD
+
+# 交易规则
+trading_rules:
+  t_plus: 0  # T+0
+  price_limit:
+    enabled: false  # 无涨跌停限制
+  trading_hours:
+    pre_market_start: "04:00"
+    regular_start: "09:30"
+    regular_end: "16:00"
+    after_hours_end: "20:00"
+  min_lot_size: 1  # 最小1股
+
+# 数据配置
+data:
+  calendar: "us_nyse"
+  benchmark: "SPY"  # S&P 500 ETF
+  risk_free_rate: 0.045  # 年化无风险利率 (约4.5%)
+
+# 股票池配置
+universe:
+  default: "us_sp500"
+  filters:
+    - remove_suspended: true
+    - remove_delisted: true
+    - min_listing_days: 252  # 约1年
+    - min_market_cap: 1e9  # 10亿美元
+
+# 成本配置
+costs:
+  commission_rate: 0.0  # 多数券商免佣金
+  min_commission: 0.0
+  stamp_duty_rate: 0.0
+  sec_fee_rate: 0.000008  # SEC费用
+  finra_fee_rate: 0.000166  # FINRA TAF费用

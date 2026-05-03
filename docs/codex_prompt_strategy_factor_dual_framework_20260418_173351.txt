@@ -1,0 +1,90 @@
+﻿你正在接手一个 Windows / PowerShell 工作区：
+
+Workspace:
+E:\dzhwork\quant\quant_lab
+
+请先阅读完整交接文档：
+E:\dzhwork\quant\quant_lab\docs\codex_handoff_strategy_factor_dual_framework_20260418_173351.md
+
+用户原始目标：
+用户有一个自己搭建的 qlib + vectorbt 双框架量化分析项目，已经有 4000+ 因子，但策略层太弱，导致因子效果不能充分体现。用户要求认真联网搜索并整理更多优秀策略，不限于简单交叉信号，例如 5 日上穿 60 日等，并把策略库和因子库真实落盘到当前框架，后续回测分析可以复用。
+
+用户后续明确补充：
+策略库和因子库必须落地到 qlib + vectorbt 双框架里，不要只写文档或单框架代码。新 Codex 接手时也要注意：用户不希望只给建议，而是要能运行、能复用、能继续扩展。
+
+本轮已经完成的主要实现：
+1. 新增增强策略库：
+   E:\dzhwork\quant\quant_lab\src\strategies\factor_enhanced.py
+   包含因子组合、截面分位数组合、TopKDropout、时间序列 overlay、IC 加权、滚动波动目标、策略网格等。
+2. 扩展 vectorbt 回测：
+   E:\dzhwork\quant\quant_lab\src\backtest\portfolio_factory.py
+   E:\dzhwork\quant\quant_lab\src\backtest\signal_factory.py
+   E:\dzhwork\quant\quant_lab\src\backtest\vbt_engine.py
+3. 新增 qlib 双框架桥接：
+   E:\dzhwork\quant\quant_lab\src\qlib_ext\strategy_bridge.py
+   E:\dzhwork\quant\quant_lab\src\qlib_ext\__init__.py
+   E:\dzhwork\quant\quant_lab\scripts\export_qlib_workflow_config.py
+4. 新增配置与文档：
+   E:\dzhwork\quant\quant_lab\configs\qlib\dual_framework_alpha360_lgb_topk50_drop5.yaml
+   E:\dzhwork\quant\quant_lab\configs\research\dual_framework_strategy_pool.yaml
+   E:\dzhwork\quant\quant_lab\docs\dual_framework_strategy_reuse.md
+5. 新增测试：
+   E:\dzhwork\quant\quant_lab\tests\test_factor_enhanced_strategies.py
+   E:\dzhwork\quant\quant_lab\tests\test_qlib_strategy_bridge.py
+
+已经验证过的命令：
+在 E:\dzhwork\quant\quant_lab 下运行：
+
+$env:PYTHONPATH='.'; pytest
+
+结果：18 passed。
+
+python -m compileall -q src tests scripts\export_qlib_workflow_config.py
+
+结果：通过，无输出。
+
+注意已经遇到并解决过的问题：
+1. 直接运行 pytest 曾出现 ModuleNotFoundError: No module named 'src'，原因是没有设置 PYTHONPATH。恢复验证时请使用 $env:PYTHONPATH='.'; pytest。
+2. PowerShell 里不能使用 Bash heredoc 写法 `python - <<'PY'`，曾触发重定向解析错误。请使用 PowerShell here-string：
+   @'
+   print("hello")
+   '@ | python -
+3. 当前环境没有安装 qlib，验证结果是 ModuleNotFoundError: No module named 'qlib'。因此 qlib 桥接代码被设计成配置生成层，不在 import 时强依赖 qlib。
+4. 之前 rg.exe 出现 access denied，后续使用 Get-ChildItem / Select-String 替代。若 rg 可用仍可使用 rg，若失败不要卡住。
+
+重要既有输出和旧交接：
+1. 当前还有旧交接文件：
+   E:\dzhwork\quant\quant_lab\docs\codex_user_switch_handoff_20260418.md
+   E:\dzhwork\quant\quant_lab\docs\codex_user_switch_prompt_20260418.txt
+   旧 prompt 文件存在乱码，但旧 handoff 仍有有效上下文。
+2. 旧 TD9 长任务输出目录：
+   E:\dzhwork\quant\quant_lab\outputs\us_td9_all_assets\td9_all_assets_20260418_095256
+   该任务现在已有完整 report、best_config、top5、summary、checkpoints、per_symbol 输出，旧 handoff 中“TD9 脚本未完成”的说法已被后续输出替代。
+3. TD9 重要结果：
+   - QLD best: qqq_ema3_120_b0.0025，full annual 22.07%，maxDD -41.93%，Sharpe 0.7992，41 trades。
+   - TQQQ best: qqq_ema3_40_b0.0050，full annual 28.22%，maxDD -52.27%，Sharpe 0.7705，66 trades。
+   - NVDA 的 top1 TD9 pullback 结果低暴露、交易少，不应直接当作稳健可交易结论。
+   - _VIX 是指数，不是直接可交易标的，不应直接推荐为实盘策略。
+
+新 Codex 接手后的建议顺序：
+1. 先读：
+   E:\dzhwork\quant\quant_lab\docs\codex_handoff_strategy_factor_dual_framework_20260418_173351.md
+   E:\dzhwork\quant\quant_lab\docs\dual_framework_strategy_reuse.md
+   E:\dzhwork\quant\quant_lab\configs\research\dual_framework_strategy_pool.yaml
+2. 再读核心实现：
+   E:\dzhwork\quant\quant_lab\src\strategies\factor_enhanced.py
+   E:\dzhwork\quant\quant_lab\src\qlib_ext\strategy_bridge.py
+   E:\dzhwork\quant\quant_lab\src\backtest\vbt_engine.py
+3. 运行：
+   $env:PYTHONPATH='.'; pytest
+4. 若用户继续要“把 4000+ 因子真正跑起来”，优先做实际数据接入和批量回测脚本，而不是重复策略库重写：
+   - 发现项目当前因子存储格式和因子名称。
+   - 将 4000+ 因子加载成 factor_panels。
+   - 用 run_strategy_grid 或 enhanced_factor_strategy 做批量组合搜索。
+   - 输出统一的 CSV / Markdown 报告和可恢复 checkpoint。
+   - 如环境安装了 qlib，再把 configs/qlib 下的 workflow 配置实际交给 qlib workflow 执行。
+
+避免重复：
+不要重新发明已经落盘的 factor_enhanced、portfolio_factory、qlib_ext bridge、strategy_pool 配置；先复用这些模块。不要把旧 TD9 handoff 里的“未完成”当作当前事实，先检查 outputs/us_td9_all_assets/td9_all_assets_20260418_095256。
+
+最终回答用户时请使用中文，明确说明你基于上述本地文件继续，不需要当前历史聊天。

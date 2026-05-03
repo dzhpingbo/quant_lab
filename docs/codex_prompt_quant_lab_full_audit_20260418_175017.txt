@@ -1,0 +1,97 @@
+你正在接手 Windows / PowerShell 工作区：
+
+E:\dzhwork\quant\quant_lab
+
+请先读取本地完整交接审计文档：
+
+docs/codex_handoff_quant_lab_full_audit_20260418_175017.md
+
+不要依赖旧聊天历史。以本地文件、checkpoint、summary CSV、best_config、report 和这个 handoff 为准。
+
+历史任务核心：
+
+用户有一个 qlib + vectorbt 双框架量化项目，原始数据从 D:\dzhwork\quant 镜像到了 E:\dzhwork\quant\quant_lab\data\external\legacy_quant。用户最初不满意 588200/股票基金回测效果，要求系统分析框架和因子库，补充更好的安全策略、因子库和策略挖掘方法。任务后来扩展为 588200Pool 策略研究、TD9/神奇九转、因子组合、均线交叉、横盘过滤、AutoResearch 思路、外部因子库下载和适配、US QQQ/QLD/TQQQ/vectorbt 回测、TD9 all-assets，以及把策略/因子库落入 qlib + vectorbt 双框架。
+
+重要本地规范：
+
+- 使用 588200Pool 任务时读取 skill：
+  C:\Users\Administrator\.codex\skills\588200-pool\SKILL.md
+- 报告规范：
+  docs/report_generation_standard.md
+- 数据迁移说明：
+  docs/data_migration_map.md
+- 双框架说明：
+  docs/dual_framework_strategy_reuse.md
+- 外部因子说明：
+  docs/external_factor_adapters.md
+  docs/external_resource_reuse.md
+
+当前已完成的重点：
+
+1. 数据已从 D:\dzhwork\quant 镜像到 data/external/legacy_quant。
+2. 588200Pool skill 已创建。
+3. 588200 已完成多轮策略搜索：
+   - factor combo: outputs/588200_longrun_factor_strategy/combo_20260412_224013
+   - MA cross: outputs/588200_ma_crossover_strategy/ma_cross_20260413_152740
+   - sideways filter: outputs/588200_sideways_filtered_strategy/sideways_20260413_164557
+   - TD9 indicator combo: outputs/588200_td9_indicator_combo/td9_combo_stage2_20260415_213550
+   - TD9 MA simple/fast: outputs/588200_td9_ma_simple/td9_ma_fast_20260415_234750
+4. 外部因子库已下载/索引/部分适配：
+   - 452 external panel factors
+   - 82 WorldQuant Alpha101
+   - 360 Qlib Alpha360
+   - 10 local GTJA Alpha191
+5. US leveraged ETF / TD9 all-assets 已完成：
+   outputs/us_td9_all_assets/td9_all_assets_20260418_095256
+6. vectorbt + Qlib 双框架策略层已落地：
+   - src/strategies/factor_enhanced.py
+   - src/backtest/portfolio_factory.py
+   - src/backtest/signal_factory.py
+   - src/backtest/vbt_engine.py
+   - src/qlib_ext/strategy_bridge.py
+   - configs/research/dual_framework_strategy_pool.yaml
+   - configs/qlib/dual_framework_alpha360_lgb_topk50_drop5.yaml
+   - scripts/export_qlib_workflow_config.py
+
+当前验证命令：
+
+cd E:\dzhwork\quant\quant_lab
+$env:PYTHONPATH='.'
+pytest
+python -m compileall -q src tests scripts\export_qlib_workflow_config.py
+
+最近验证结果：18 passed，compileall passed。
+
+重要结论：
+
+- 588200Pool 当前稳健冠军仍优先看：
+  factor_overlay__combo2__alpha_pv_corr_20__safe_low_vol_60__mom120__vol120__vp90__fb50__fs40__poolmom
+  OOS annual 61.83%, Sharpe 2.529, maxDD -12.62%, exposure 27.72%.
+- TD9 indicator combo 防守型候选：
+  td9_combo__alpha_td9_sell_pressure_4_9__mom120__td50_40__bb55_bs45__vol120_vp90__poolmom__none__vix_below_ma20
+  OOS annual 46.46%, Sharpe 2.531, maxDD -4.53%, exposure 20.79%, latest EMPTY_OR_SELL_588200 on 2026-04-08.
+- TD9 MA fast target-only candidate：
+  td9_buy_ma__ma13_20__buy2_r1__exit7
+  OOS annual 63.79%, Sharpe 3.176, maxDD -5.08%, but it is more single-target and needs overfit warning.
+- US QLD/TQQQ latest TD9 all-assets:
+  QLD qqq_ema3_120_b0.0025, full annual 22.07%, maxDD -41.93%.
+  TQQQ qqq_ema3_40_b0.0050, full annual 28.22%, maxDD -52.27%.
+  These are research baselines, not safe final strategies.
+
+Known issues:
+
+- qlib is not installed in current Python env. Qlib config generation works, actual workflow execution requires installing/configuring pyqlib and data/qlib_bin.
+- rg.exe may fail with Access denied; use Get-ChildItem/Select-String.
+- PowerShell cannot use Bash heredoc; use here-string piped to python.
+- Some older Chinese reports display mojibake in PowerShell.
+- AutoResearch git clone failed due GitHub 443/DNS; see external_repos/karpathy_autoresearch/SOURCE.md.
+- Do not rely on old handoff saying TD9 all-assets is unfinished; latest output is complete.
+
+Next best task:
+
+If user asks to continue 588200, generate a final consolidated Chinese report comparing robust factor combo, TD9 indicator combo, TD9 MA fast, MA cross, and sideways filter. Follow docs/report_generation_standard.md: explain every indicator, buy point, sell point, execution timing, latest action, train/OOS/full metrics, buy-and-hold benchmark, and overfit limitations.
+
+If user asks to use the 4000+ factors, do not rewrite the strategy library. Use src/factors/external_adapters.py and src/strategies/factor_enhanced.py, then run a checkpointed real-data vectorbt enhanced factor strategy search with summary CSV/report.
+
+请用中文回复用户，并明确你基于本地 handoff 和项目文件继续，不需要旧聊天历史。
+

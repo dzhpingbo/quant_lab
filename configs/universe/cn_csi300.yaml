@@ -1,0 +1,16 @@
+# 沪深300成分股股票池
+universe_id: cn_csi300
+market: cn
+description: "沪深300指数成分股"
+
+filters:
+  remove_st: true
+  remove_suspended: true
+  remove_delisted: true
+  min_listing_days: 60
+
+# 指数成分
+index_components:
+  - SH000300  # 沪深300
+
+update_frequency: daily

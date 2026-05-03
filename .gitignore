@@ -1,0 +1,35 @@
+# Quant research outputs and heavy artifacts
+data/
+outputs/
+*.zip
+*.parquet
+*.pkl
+*.joblib
+*.bin
+*.h5
+*.feather
+*.xlsx
+
+# Local tool / vendor directories (not for version control)
+external_repos/
+.workbuddy/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Local caches / transient files
+.pytest_cache/
+.numba_cache/
+.tmp/
+mlruns/
+
+# Keep review bridge and project control docs commit-ready
+!docs/chatgpt_bridge/**
+!RUN_SUMMARY.md
+!NEXT_STEPS.md
+!AGENTS.md
+!docs/US_STOCK_SELECTION_AUTORUN.md

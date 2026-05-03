@@ -1,0 +1,27 @@
+# 测试环境配置
+env: test
+
+paths:
+  data_root: ./data
+  raw_data: ./data/raw
+  staging_data: ./data/staging
+  qlib_bin: ./data/qlib_bin
+  features_cache: ./data/features_cache
+  dataset_cache: ./data/dataset_cache
+  outputs: ./outputs/test
+  experiments: ./experiments/test
+
+logging:
+  level: INFO
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {message}"
+  sink: ./outputs/test/logs/test.log
+  rotation: "1 MB"
+  retention: "7 days"
+
+compute:
+  n_jobs: 2
+  chunk_size: 1000
+  memory_limit: 2G
+
+cache:
+  enabled: false

@@ -1,0 +1,151 @@
+paths:
+  output_root: outputs/us_stock_selection
+
+research_mode: qlib_first_v4
+
+logging:
+  level: INFO
+
+benchmark:
+  primary: SPY
+
+study_period:
+  start_date: 2010-01-01
+  end_date: 2026-04-24
+
+universe_selection:
+  include_universes:
+    - core_etf
+    - mag7
+    - growth_expansion
+  reserve_universes:
+    - nasdaq100_placeholder
+    - sp500_placeholder
+
+data:
+  allow_download: false
+  download_start: 2000-01-01
+  preferred_local_priority:
+    - data/raw/us/us_stock_selection
+    - data/raw/us
+    - data/external/legacy_quant/NSDQStock
+
+data_quality:
+  min_observations: 756
+  max_missing_rate: 0.05
+  abnormal_return_threshold: 0.80
+  min_average_dollar_volume: 5000000
+  max_zero_volume_ratio: 0.10
+
+features:
+  cache_dir: data/features_cache/us_stock_selection
+  trend_threshold: 0.05
+  enable_safety_features: false
+
+factor_screen:
+  target_label: risk_adjusted_label
+  min_samples: 120
+  chunk_size: 63
+  min_abs_rank_ic: 0.03
+  min_stability_score: 0.55
+
+portfolio:
+  initial_cash: 100000
+
+execution:
+  enable_vectorbt_runtime: false
+
+costs:
+  etf_fee_bps: 3
+  etf_slippage_bps: 3
+  stock_fee_bps: 5
+  stock_slippage_bps: 5
+  leveraged_etf_fee_bps: 5
+  leveraged_etf_slippage_bps: 7
+
+validation:
+  preferred_train_start: 2010-01-01
+  preferred_train_end: 2017-12-31
+  preferred_valid_start: 2018-01-01
+  preferred_valid_end: 2021-12-31
+  preferred_test_start: 2022-01-01
+  preferred_test_end: 2026-04-24
+  plateau_share_threshold: 0.15
+
+walk_forward:
+  train_days: 756
+  test_days: 756
+  anchored_expanding: true
+  strict_parameter_selection: true
+  search_all_grid: true
+  max_combinations_per_template: 1
+  max_total_parameter_sets: 4
+  max_tickers: 0
+
+selection_rules:
+  min_oos_cagr: 0.20
+  max_oos_drawdown: 0.50
+  min_oos_trades: 20
+
+ml:
+  target_label: risk_adjusted_label
+  min_train_rows: 250
+  entry_quantile: 0.65
+  exit_quantile: 0.35
+  max_tickers: 6
+
+qlib:
+  region: us
+  strategy_name: topk_dropout_50_5
+  model_class: LGBModel
+  model_module: qlib.contrib.model.gbdt
+  target_label: risk_adjusted_label
+  max_tickers: 6
+
+qlib_v4:
+  provider_uri: ~/.qlib/qlib_data/us_data
+  feature_sets:
+    - alpha158_like
+    - alpha360_like
+    - alpha158_custom
+  models:
+    - lightgbm
+    - ridge
+  labels:
+    - forward_return_5d
+    - forward_return_10d
+    - forward_return_20d
+    - risk_adj_10d
+  max_model_runs: 24
+  max_features_per_set: 80
+  min_train_rows: 1500
+  train_end: 2018-12-31
+  valid_start: 2019-01-01
+  valid_end: 2021-12-31
+  signal_backtest:
+    rebalance: [W, M]
+    top_k: [1, 3, 5, 10]
+    n_drop: [1, 2]
+    max_weight: [0.2, 0.33, 0.5, 1.0]
+    transaction_cost_bps: 5
+    slippage_bps: 5
+    safe_asset: SHY
+    max_backtest_runs: 120
+  walk_forward:
+    start_year: 2020
+    test_months: 12
+
+ranking:
+  leverage_penalty: 3.0
+  weights:
+    oos_calmar_score: 0.25
+    cagr_score: 0.15
+    robustness_score: 0.15
+    strategy_vs_bh_calmar_score: 0.10
+    parameter_stability_score: 0.10
+    factor_support_score: 0.10
+    regime_score: 0.10
+    simplicity_score: 0.05
+
+reporting:
+  top_n: 20

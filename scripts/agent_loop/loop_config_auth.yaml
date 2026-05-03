@@ -1,0 +1,49 @@
+project_root: "E:/dzhwork/quant/quant_lab"
+outputs_dir: "E:/dzhwork/quant/quant_lab/outputs/us_stock_selection"
+bridge_dir: "E:/dzhwork/quant/quant_lab/docs/chatgpt_bridge"
+
+bridge:
+  mode: github_issue
+  local_cache_dir: docs/chatgpt_bridge
+  github:
+    enabled: true
+    repo: auto_detect
+    issue_number: null
+    issue_title: Codex Agent Loop Control
+    create_issue_if_missing: true
+    use_gh_cli: true
+    allow_commit_state_files: false
+    allow_push: false
+    state_dir: docs/chatgpt_bridge/github_state
+
+codex:
+  command: "codex"
+  reviewer_mode: "exec"
+  worker_mode: "exec"
+  approval: "full-auto"
+  sandbox: "workspace-write"
+  reviewer_task: "docs/chatgpt_bridge/reviewer_inbox/REVIEW_TASK.md"
+  next_codex_task: "docs/chatgpt_bridge/reviewer_outbox/NEXT_CODEX_TASK.md"
+  worker_task: "docs/chatgpt_bridge/codex_inbox/TASK.md"
+  reviewer_last_message: "docs/chatgpt_bridge/reviewer_outbox/REVIEWER_LAST_MESSAGE.md"
+  worker_last_message: "docs/chatgpt_bridge/codex_outbox/CODEX_LAST_MESSAGE.md"
+
+loop:
+  max_rounds: 10
+  stop_on_need_human: true
+  stop_on_error: true
+  stop_on_trade_ready: true
+  require_human_review_before_expand_nasdaq100: true
+  require_human_review_before_trade: true
+  consecutive_failure_limit: 2
+  no_improvement_limit: 3
+
+safety:
+  allow_git_push: false
+  allow_delete_outputs: false
+  allow_trade_execution: false
+  allow_broker_api: false
+  allow_expand_universe: true
+  allow_expand_nasdaq100: false
+  allow_expand_sp500: false
+  allow_external_network_download: false

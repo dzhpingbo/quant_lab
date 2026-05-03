@@ -1,0 +1,53 @@
+name: core_mvp
+description: Core MVP universe for quick validation.
+asset_type: mixed
+tickers:
+  - ticker: QQQ
+    asset_type: etf
+    theme: nasdaq100
+  - ticker: QLD
+    asset_type: etf
+    theme: leveraged_nasdaq100
+    is_leveraged: true
+  - ticker: TQQQ
+    asset_type: etf
+    theme: leveraged_nasdaq100
+    is_leveraged: true
+  - ticker: SPY
+    asset_type: etf
+    theme: sp500
+  - ticker: SOXX
+    asset_type: etf
+    theme: semiconductors
+  - ticker: XLK
+    asset_type: etf
+    theme: technology
+  - ticker: NVDA
+    asset_type: equity
+    sector: semiconductors
+    theme: ai
+  - ticker: MSFT
+    asset_type: equity
+    sector: software
+    theme: cloud
+  - ticker: AAPL
+    asset_type: equity
+    sector: consumer_tech
+    theme: hardware
+  - ticker: GOOGL
+    asset_type: equity
+    sector: internet
+    theme: ads_ai
+  - ticker: AMZN
+    asset_type: equity
+    sector: internet
+    theme: ecommerce_cloud
+  - ticker: META
+    asset_type: equity
+    sector: internet
+    theme: ads_ai
+  - ticker: TSLA
+    asset_type: equity
+    sector: ev
+    theme: high_beta_growth
+

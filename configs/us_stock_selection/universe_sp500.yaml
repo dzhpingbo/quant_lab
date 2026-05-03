@@ -1,0 +1,6 @@
+name: sp500_placeholder
+description: Placeholder interface for S&P 500 members when historical constituent data is available.
+asset_type: equity
+tickers:
+  - {ticker: SPY, asset_type: etf, theme: proxy_only}
+

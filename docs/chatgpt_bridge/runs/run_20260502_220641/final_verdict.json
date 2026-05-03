@@ -1,0 +1,14 @@
+{
+  "stage": "v8.2_year_stability",
+  "mainline": "Alpha360 + LGBModel + label_5d",
+  "variant_count": 53,
+  "result_count": 53,
+  "best_strategy_id": "top5_ytdcap80p_derisk100p",
+  "classification": "v9_ready_research_candidate",
+  "allow_enter_v9": true,
+  "reason": "All v8.2 gates passed, but this run still does not enter v9 automatically.",
+  "no_v9_this_round": true,
+  "no_universe_expansion": true,
+  "no_model_training": true,
+  "no_trading_claim": true
+}

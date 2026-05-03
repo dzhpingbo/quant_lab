@@ -1,0 +1,24 @@
+name: core_etf
+description: Core tradable US ETF pool.
+asset_type: etf
+tickers:
+  - {ticker: QQQ, asset_type: etf, theme: nasdaq100}
+  - {ticker: QLD, asset_type: etf, theme: leveraged_nasdaq100, is_leveraged: true}
+  - {ticker: TQQQ, asset_type: etf, theme: leveraged_nasdaq100, is_leveraged: true}
+  - {ticker: SPY, asset_type: etf, theme: sp500}
+  - {ticker: SSO, asset_type: etf, theme: leveraged_sp500, is_leveraged: true}
+  - {ticker: UPRO, asset_type: etf, theme: leveraged_sp500, is_leveraged: true}
+  - {ticker: DIA, asset_type: etf, theme: dow30}
+  - {ticker: IWM, asset_type: etf, theme: russell2000}
+  - {ticker: SOXX, asset_type: etf, theme: semiconductors}
+  - {ticker: SMH, asset_type: etf, theme: semiconductors}
+  - {ticker: XLK, asset_type: etf, theme: technology}
+  - {ticker: XLY, asset_type: etf, theme: consumer_discretionary}
+  - {ticker: XLC, asset_type: etf, theme: communication_services}
+  - {ticker: XLF, asset_type: etf, theme: financials}
+  - {ticker: XLE, asset_type: etf, theme: energy}
+  - {ticker: GLD, asset_type: etf, theme: gold}
+  - {ticker: TLT, asset_type: etf, theme: long_treasury}
+  - {ticker: IEF, asset_type: etf, theme: intermediate_treasury}
+  - {ticker: SHY, asset_type: etf, theme: short_treasury}
+

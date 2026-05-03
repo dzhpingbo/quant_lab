@@ -1,0 +1,76 @@
+version: 1
+updated_at: 2026-04-18
+purpose: "Reusable strategy specs that can be run in vectorbt and exported to Qlib workflows."
+
+strategy_specs:
+  topk_dropout_50_5:
+    family: rank_portfolio
+    vectorbt:
+      portfolio_method: topk_dropout
+      top_k: 50
+      n_drop: 5
+    qlib:
+      strategy_class: TopkDropoutStrategy
+      module_path: qlib.contrib.strategy
+      topk: 50
+      n_drop: 5
+      signal: <PRED>
+    reuse_notes: "Use vectorbt for quick factor-score screening; use Qlib after model prediction is available."
+
+  topk_dropout_100_10:
+    family: rank_portfolio
+    vectorbt:
+      portfolio_method: topk_dropout
+      top_k: 100
+      n_drop: 10
+    qlib:
+      strategy_class: TopkDropoutStrategy
+      module_path: qlib.contrib.strategy
+      topk: 100
+      n_drop: 10
+      signal: <PRED>
+    reuse_notes: "Broader portfolio for larger universes and lower single-name concentration."
+
+  quantile_20_long_only:
+    family: factor_quantile
+    vectorbt:
+      portfolio_method: quantile
+      long_quantile: 0.2
+      short_quantile: 0.0
+      weighting: equal
+    qlib:
+      strategy_class: TopkDropoutStrategy
+      module_path: qlib.contrib.strategy
+      topk: 50
+      n_drop: 5
+      signal: <PRED>
+    reuse_notes: "Qlib execution is the long-side ranking equivalent over predictions."
+
+  ic_weighted_topk_dropout_50_5:
+    family: dynamic_factor_blend
+    vectorbt:
+      portfolio_method: topk_dropout
+      use_ic_weights: true
+      top_k: 50
+      n_drop: 5
+    qlib:
+      strategy_class: TopkDropoutStrategy
+      module_path: qlib.contrib.strategy
+      topk: 50
+      n_drop: 5
+      signal: <PRED>
+    reuse_notes: "For vectorbt, build rolling IC composite score before execution; for Qlib, feed model predictions into the same execution rule."
+
+factor_library_bridge:
+  qlib_alpha360:
+    vectorbt_entry: "src.factors.external_adapters.compute_qlib_alpha360_factor_panels"
+    qlib_entry: "qlib.contrib.data.handler.Alpha360"
+    local_prefix: qlib360_
+  worldquant_alpha101:
+    vectorbt_entry: "src.factors.external_adapters.compute_alpha101_factor_panels"
+    qlib_entry: "custom handler or exported feature table"
+    local_prefix: wq_alpha
+  gtja_alpha191:
+    vectorbt_entry: "src.factors.external_adapters.compute_gtja191_factor_panels"
+    qlib_entry: "custom handler or exported feature table"
+    local_prefix: gtja_alpha

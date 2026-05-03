@@ -1,0 +1,10 @@
+# Backtesting engines (already in base, but listed for clarity)
+pyqlib>=0.9.0
+vectorbt>=0.25.0
+
+# Performance analysis
+pyfolio-reloaded>=0.9.0
+quantstats>=0.0.59
+
+# Risk metrics
+pyrisk>=0.1.0

@@ -1,0 +1,16 @@
+# 20日收益率标签
+label_id: ret_20d
+description: "未来20日收益率（约1个月）"
+
+type: return
+holding_period: 20
+skip_first_day: true
+return_type: simple
+deduct_costs: false
+costs_config: null
+benchmark: null
+
+post_process:
+  winsorize: null
+  standardize: false
+  rank: false

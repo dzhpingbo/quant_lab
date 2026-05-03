@@ -1,0 +1,90 @@
+version: 1
+updated_at: 2026-04-12
+purpose: "因子库候选清单：记录来源、优先级、验证要求和上线状态。"
+
+factor_sources:
+  qlib_alpha158:
+    priority: "P0"
+    status: "planned"
+    source: "Microsoft Qlib Alpha158"
+    url: "https://github.com/microsoft/qlib/blob/main/qlib/contrib/data/handler.py"
+    notes: "作为量价因子标准基线，优先适配当前 AStock 数据。"
+  qlib_alpha360:
+    priority: "P0"
+    status: "planned"
+    source: "Microsoft Qlib Alpha360"
+    url: "https://github.com/microsoft/qlib/blob/main/qlib/contrib/data/handler.py"
+    notes: "更高维的量价窗口特征，适合配合模型但需防过拟合。"
+  worldquant_101:
+    priority: "P1"
+    status: "planned"
+    source: "WorldQuant 101 Formulaic Alphas"
+    url: "https://arxiv.org/abs/1601.00991"
+    notes: "公式因子候选池，必须去重、中性化和样本外验证。"
+  gtja_191:
+    priority: "P1"
+    status: "planned"
+    source: "GTJA 191 style formulaic alphas"
+    notes: "A股常用公式因子集合，需自行确认数据字段口径与复权处理。"
+  fundamental_quality_value:
+    priority: "P0"
+    status: "partial"
+    source: "academic + local fundamentals"
+    notes: "ROE、毛利率、现金流质量、PB/PE/PS、股息率、盈利增长。"
+  risk_safety:
+    priority: "P0"
+    status: "partial"
+    source: "low volatility / downside risk literature"
+    notes: "低波动、低下行波动、CVaR、最大回撤、低 beta、低特质波动。"
+  alpha_generation:
+    priority: "P2"
+    status: "research"
+    source: "AlphaGen / RD-Agent"
+    urls:
+      - "https://github.com/RL-MLDM/alphagen"
+      - "https://github.com/microsoft/RD-Agent"
+    notes: "只用于生成候选因子，不直接上线。"
+
+factor_metadata_required:
+  - name
+  - category
+  - direction
+  - source
+  - formula
+  - required_fields
+  - rebalance_frequency
+  - expected_holding_period
+  - neutralization
+  - winsorization
+  - missing_value_policy
+  - coverage
+  - turnover
+  - rank_ic_mean
+  - rank_ic_ir
+  - quantile_spread
+  - monotonicity
+  - correlation_to_existing_factors
+  - oos_metrics
+
+validation_thresholds:
+  min_coverage: 0.80
+  preferred_rank_ic_ir: 0.30
+  default_reject_rank_ic_ir_below: 0.10
+  max_abs_corr_to_existing: 0.70
+  require_positive_oos_quantile_spread: true
+  require_cost_adjusted_positive: true
+  require_parameter_stability: true
+
+pipeline_steps:
+  - collect_candidate_factors
+  - align_point_in_time_data
+  - winsorize_and_standardize
+  - neutralize_industry_size_beta
+  - compute_forward_returns
+  - compute_rank_ic_and_icir
+  - compute_quantile_returns
+  - compute_turnover_and_capacity
+  - deduplicate_by_correlation
+  - walk_forward_validation
+  - deflated_sharpe_or_pbo_check
+  - promote_to_live_candidate

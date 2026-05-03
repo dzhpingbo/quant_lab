@@ -1,0 +1,41 @@
+# A股市场配置
+market: cn
+market_name: "中国A股"
+currency: CNY
+
+# 交易规则
+trading_rules:
+  t_plus: 1  # T+1
+  price_limit:
+    enabled: true
+    limit_pct: 0.10  # 10% for most stocks, 20% for STAR Market
+    star_market_limit_pct: 0.20
+  trading_hours:
+    morning_start: "09:30"
+    morning_end: "11:30"
+    afternoon_start: "13:00"
+    afternoon_end: "15:00"
+  min_lot_size: 100  # 最小交易单位
+
+# 数据配置
+data:
+  calendar: "csi"  # 中证指数交易日历
+  benchmark: "SH000300"  # 沪深300
+  risk_free_rate: 0.03  # 年化无风险利率
+
+# 股票池配置
+universe:
+  default: "cn_all"
+  filters:
+    - remove_st: true
+    - remove_suspended: true
+    - remove_delisted: true
+    - min_listing_days: 60
+    - min_market_cap: 1e8  # 1亿
+
+# 成本配置
+costs:
+  commission_rate: 0.0003  # 万分之3
+  min_commission: 5.0  # 最低5元
+  stamp_duty_rate: 0.001  # 千分之1 (卖出)
+  transfer_fee_rate: 0.00002  # 十万分之2

@@ -1,0 +1,25 @@
+name: growth_expansion
+description: High-liquidity technology and growth extension pool.
+asset_type: equity
+tickers:
+  - {ticker: AMD, asset_type: equity, sector: semiconductors, theme: ai}
+  - {ticker: AVGO, asset_type: equity, sector: semiconductors, theme: ai}
+  - {ticker: ARM, asset_type: equity, sector: semiconductors, theme: ai}
+  - {ticker: ASML, asset_type: equity, sector: semiconductors, theme: chip_equipment}
+  - {ticker: MU, asset_type: equity, sector: semiconductors, theme: memory}
+  - {ticker: INTC, asset_type: equity, sector: semiconductors, theme: cpu}
+  - {ticker: CRM, asset_type: equity, sector: software, theme: enterprise}
+  - {ticker: ORCL, asset_type: equity, sector: software, theme: cloud}
+  - {ticker: NOW, asset_type: equity, sector: software, theme: workflow}
+  - {ticker: ADBE, asset_type: equity, sector: software, theme: creative_cloud}
+  - {ticker: NFLX, asset_type: equity, sector: internet, theme: streaming}
+  - {ticker: SHOP, asset_type: equity, sector: software, theme: ecommerce}
+  - {ticker: PANW, asset_type: equity, sector: software, theme: cybersecurity}
+  - {ticker: CRWD, asset_type: equity, sector: software, theme: cybersecurity}
+  - {ticker: PLTR, asset_type: equity, sector: software, theme: ai}
+  - {ticker: NET, asset_type: equity, sector: software, theme: cloud_network}
+  - {ticker: SNOW, asset_type: equity, sector: software, theme: data_cloud}
+  - {ticker: UBER, asset_type: equity, sector: internet, theme: platform}
+  - {ticker: COIN, asset_type: equity, sector: fintech, theme: crypto}
+  - {ticker: MSTR, asset_type: equity, sector: software, theme: crypto_beta}
+

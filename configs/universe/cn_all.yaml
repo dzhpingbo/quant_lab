@@ -1,0 +1,35 @@
+# A股全市场股票池
+universe_id: cn_all
+market: cn
+description: "A股全市场（剔除ST、退市、停牌）"
+
+# 筛选条件
+filters:
+  # 基础筛选
+  remove_st: true
+  remove_suspended: true
+  remove_delisted: true
+  
+  # 上市时间
+  min_listing_days: 60
+  
+  # 市值筛选（可选）
+  min_market_cap: null
+  max_market_cap: null
+  
+  # 价格筛选
+  min_price: 1.0
+  max_price: null
+  
+  # 流动性筛选
+  min_avg_volume_20d: null
+  min_avg_amount_20d: null
+
+# 指数成分（可选）
+index_components: null
+
+# 行业筛选（可选）
+industry_filter: null
+
+# 更新频率
+update_frequency: daily

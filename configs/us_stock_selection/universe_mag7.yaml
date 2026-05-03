@@ -1,0 +1,12 @@
+name: mag7
+description: Seven mega-cap technology names.
+asset_type: equity
+tickers:
+  - {ticker: NVDA, asset_type: equity, sector: semiconductors, theme: ai}
+  - {ticker: MSFT, asset_type: equity, sector: software, theme: cloud}
+  - {ticker: AAPL, asset_type: equity, sector: consumer_tech, theme: hardware}
+  - {ticker: GOOGL, asset_type: equity, sector: internet, theme: ads_ai}
+  - {ticker: AMZN, asset_type: equity, sector: internet, theme: ecommerce_cloud}
+  - {ticker: META, asset_type: equity, sector: internet, theme: ads_ai}
+  - {ticker: TSLA, asset_type: equity, sector: auto_ev, theme: high_beta_growth}
+

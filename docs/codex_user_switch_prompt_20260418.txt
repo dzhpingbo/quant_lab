@@ -1,0 +1,28 @@
+你正在接手 Windows/PowerShell 工作区 `E:\dzhwork\quant\quant_lab` 的量化研究任务。请先读取本地交接文档：
+
+`docs/codex_user_switch_handoff_20260418.md`
+
+重要要求：
+1. 不要依赖旧聊天上下文，以本地文件/checkpoint 为准。
+2. 继续完成当前进行中的任务：在所有可用策略和因子库基础上，加入 TD9/神奇九转信号，把 TD9 与动量、均线交叉、MACD/ADX、ROC、多因子分数、VIX/波动过滤、相对动量等信号组合。
+3. 使用 vectorbt 回测：
+   - 美股七巨头：AAPL、MSFT、NVDA、AMZN、META、GOOGL、TSLA；
+   - 本地可用且已识别的美股基金/ETF/指数；
+   - 单独给出 QLD 和 TQQQ。
+4. 当前脚本 `scripts/vbt_us_td9_all_assets.py` 已经写了一半且可以编译，但缺少 evaluation/report/main。请继续补完它，不要重头另起炉灶。
+5. 长任务每个阶段写 checkpoint 到 `outputs/us_td9_all_assets/td9_all_assets_<timestamp>/`，避免依赖聊天上下文。
+6. 回测口径继续保持：收盘后生成信号，下一交易日开盘成交；设置单边费用/滑点 0.1%。
+7. 评分不能只看收益，要同时惩罚最大回撤、低 Sharpe、过低全样本年化、过少交易、过低暴露。必须包含 buy-and-hold benchmark。
+8. 输出：
+   - 全部标的最优结果表；
+   - 效果最好的前 5 名，按效果排序；
+   - MAG7 结果表；
+   - ETF/fund/index 结果表；
+   - QLD 和 TQQQ 的最优策略、效果、历史买卖点和详细策略说明；
+   - final `report.md`、`best_config.json`、各标的 trades/operation CSV。
+9. vectorbt 运行前设置：
+   `$env:NUMBA_CACHE_DIR='e:\dzhwork\quant\quant_lab\.numba_cache'`
+   `$env:TMP='e:\dzhwork\quant\quant_lab\.tmp'`
+   `$env:TEMP='e:\dzhwork\quant\quant_lab\.tmp'`
+
+请先检查 `scripts/vbt_us_td9_all_assets.py` 和最近输出目录，然后补完脚本、运行回测、读取结果，最后用中文总结。

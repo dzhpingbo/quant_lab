@@ -1,0 +1,28 @@
+# 5日收益率标签
+label_id: ret_5d
+description: "未来5日收益率"
+
+# 标签类型: return, excess_return, rank, binary
+type: return
+
+# 持有期
+holding_period: 5
+
+# 是否跳过首日（避免未来函数）
+skip_first_day: true
+
+# 收益计算方式: simple, log
+return_type: simple
+
+# 是否扣除交易成本
+deduct_costs: false
+costs_config: null
+
+# 基准（用于超额收益）
+benchmark: null
+
+# 标签转换
+post_process:
+  winsorize: null  # 可选: 0.01表示1%缩尾
+  standardize: false
+  rank: false

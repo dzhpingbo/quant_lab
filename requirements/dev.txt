@@ -1,0 +1,28 @@
+# Testing
+pytest>=7.0.0
+pytest-cov>=3.0.0
+pytest-xdist>=2.5.0
+hypothesis>=6.0.0
+
+# Code quality
+black>=22.0.0
+isort>=5.10.0
+flake8>=4.0.0
+mypy>=0.950
+pylint>=2.13.0
+bandit>=1.7.0
+
+# Documentation
+sphinx>=4.5.0
+sphinx-rtd-theme>=1.0.0
+myst-parser>=0.17.0
+
+# Development tools
+pre-commit>=2.17.0
+jupyter>=1.0.0
+ipython>=8.0.0
+notebook>=6.4.0
+
+# Debugging
+ipdb>=0.13.0
+pdbpp>=0.10.0

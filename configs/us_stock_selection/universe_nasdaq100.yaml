@@ -1,0 +1,6 @@
+name: nasdaq100_placeholder
+description: Placeholder interface for Nasdaq-100 members when historical constituent data is available.
+asset_type: equity
+tickers:
+  - {ticker: QQQ, asset_type: etf, theme: proxy_only}
+

@@ -1,0 +1,18 @@
+# 20日超额收益标签
+label_id: excess_ret_20d
+description: "未来20日相对基准超额收益"
+
+type: excess_return
+holding_period: 20
+skip_first_day: true
+return_type: simple
+deduct_costs: false
+costs_config: null
+
+# 基准配置
+benchmark: SH000300  # 沪深300
+
+post_process:
+  winsorize: null
+  standardize: true  # 超额收益通常标准化
+  rank: false

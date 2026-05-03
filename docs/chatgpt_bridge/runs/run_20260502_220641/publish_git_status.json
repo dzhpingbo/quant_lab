@@ -1,0 +1,12 @@
+{
+  "git_push_requested": true,
+  "is_git_repo": false,
+  "has_remote": false,
+  "commit_attempted": false,
+  "commit_success": false,
+  "push_attempted": false,
+  "push_success": false,
+  "message": "Not a git repository; bridge generated locally only.",
+  "stdout": "",
+  "stderr": "fatal: not a git repository (or any of the parent directories): .git\n"
+}

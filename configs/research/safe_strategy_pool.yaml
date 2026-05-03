@@ -1,0 +1,86 @@
+version: 1
+updated_at: 2026-04-12
+purpose: "安全策略候选池：优先追求可解释、低回撤、样本外稳定，而不是单段收益最大。"
+
+strategy_families:
+  etf_defensive_timing:
+    description: "ETF 防守择时：目标 ETF 只做满仓/空仓切换。"
+    assets: ["ETF", "sector ETF", "theme ETF"]
+    core_signals:
+      - name: absolute_momentum
+        windows: [20, 60, 120]
+        meaning: "目标 ETF 当前收盘价相对 N 日前收盘价的收益率。"
+      - name: constituent_breadth
+        windows: [20, 60]
+        meaning: "成分股站上各自 N 日均线的比例。"
+      - name: volatility_percentile
+        windows: [20, 60]
+        meaning: "目标 ETF 实现波动率在过去一年中的分位数。"
+    entry_template:
+      - "absolute_momentum > 0"
+      - "constituent_breadth >= entry_threshold"
+      - "volatility_percentile <= volatility_cap"
+    exit_template:
+      - "absolute_momentum <= 0"
+      - "constituent_breadth <= exit_threshold"
+      - "volatility_percentile > volatility_exit_cap"
+
+  low_vol_quality_stock_selection:
+    description: "股票池安全选股：低波动、质量、动量、流动性、估值复合打分。"
+    assets: ["A-share stocks"]
+    core_factors:
+      - low_volatility
+      - downside_risk
+      - quality
+      - medium_term_momentum
+      - liquidity
+      - value
+    default_weights:
+      low_volatility: 0.30
+      quality: 0.25
+      medium_term_momentum: 0.20
+      liquidity: 0.15
+      value: 0.10
+    required_filters:
+      - "non_st"
+      - "not_suspended"
+      - "min_avg_amount_20d"
+      - "max_single_stock_weight"
+      - "industry_weight_cap"
+
+  dual_momentum_rotation:
+    description: "双动量轮动：先看相对强弱，再看绝对动量，不满足则切现金/低风险资产。"
+    assets: ["ETF pool", "industry ETF pool"]
+    core_signals:
+      - relative_momentum
+      - absolute_momentum
+      - volatility_inverse_weight
+    entry_template:
+      - "rank(relative_momentum) in top_k"
+      - "absolute_momentum > 0"
+    exit_template:
+      - "absolute_momentum <= 0"
+      - "rank(relative_momentum) drops below threshold"
+
+  volatility_target_overlay:
+    description: "组合级波动率目标：不单独产生标的，只调整已有策略仓位。"
+    target_annual_volatility: [0.10, 0.15]
+    controls:
+      - max_drawdown_cut
+      - max_turnover
+      - max_asset_weight
+      - max_industry_weight
+      - cost_doubling_stress_test
+
+validation_gate:
+  must_have:
+    - train_test_split
+    - walk_forward
+    - transaction_costs
+    - benchmark_comparison
+    - parameter_stability_check
+  reject_if:
+    - "uses_out_of_sample_to_select_parameters"
+    - "performance_only_good_at_single_parameter_point"
+    - "cost_doubling_turns_oos_sharpe_negative"
+    - "drawdown_exceeds_defined_safety_budget"

@@ -1,0 +1,110 @@
+search:
+  max_combinations_per_template: 12
+
+templates:
+  ma_trend:
+    max_combinations: 2
+    params:
+      ma_fast: [10, 20, 30, 50]
+      ma_slow: [60, 100, 150, 200]
+      market_filter_source: [QQQ_trend, SPY_trend, none]
+      market_filter_threshold: [0.0]
+
+  breakout_atr:
+    max_combinations: 2
+    params:
+      breakout_window: [20, 40, 55, 120]
+      exit_window: [10, 20, 30]
+      atr_window: [14, 20]
+      atr_stop_mult: [2.5, 3.0, 3.5, 4.0]
+      market_filter_source: [QQQ_trend, SPY_trend]
+      market_filter_threshold: [0.0]
+
+  momentum_hold:
+    max_combinations: 2
+    params:
+      momentum_window: [20, 60, 120, 180]
+      entry_threshold: [0.03, 0.08, 0.15]
+      exit_threshold: [-0.05, 0.0, 0.03]
+      market_filter_source: [QQQ_trend, SPY_trend, none]
+      market_filter_threshold: [0.0]
+
+  rsi_trend:
+    max_combinations: 1
+    params:
+      ma_window: [50, 100, 150]
+      rsi_entry: [50, 55, 60]
+      rsi_exit: [40, 45, 50]
+      market_filter_source: [QQQ_trend, SPY_trend]
+      market_filter_threshold: [0.0]
+
+  combo_guardrail:
+    max_combinations: 2
+    params:
+      ma_fast: [20, 30]
+      ma_slow: [100, 150, 200]
+      max_realized_vol: [0.45, 0.65, 0.85]
+      atr_stop_mult: [3.0, 3.5, 4.0]
+      market_filter_source: [QQQ_trend, SPY_trend]
+      market_filter_threshold: [0.0]
+
+  aggressive_breakout:
+    max_combinations: 3
+    params:
+      breakout_window: [20, 40, 60, 120]
+      ma_long: [100, 150, 200]
+      ma_short: [10, 20, 30]
+      atr_window: [14, 20]
+      atr_stop_mult: [2.5, 3.0, 3.5, 4.0]
+      max_realized_vol: [0.45, 0.65, 0.85, null]
+      volume_z_threshold: [null, 0.5, 1.0]
+      market_filter_source: [QQQ_trend, SPY_trend]
+      market_filter_threshold: [0.0]
+
+  trend_takeprofit:
+    max_combinations: 3
+    params:
+      ma_fast: [10, 20, 30, 50]
+      ma_slow: [100, 150, 200]
+      take_profit: [0.2, 0.35, 0.5, 0.8]
+      atr_stop_mult: [2.5, 3.0, 3.5, 4.0]
+      market_filter: [QQQ_trend, SPY_trend, none]
+
+  momentum_pullback_reentry:
+    max_combinations: 2
+    params:
+      momentum_window: [60, 120, 180]
+      momentum_threshold: [0.1, 0.2, 0.4]
+      pullback_min: [0.05, 0.08, 0.12]
+      pullback_max: [0.15, 0.25, 0.35]
+      rsi_window: [14]
+      rsi_max: [65, 75, null]
+      atr_stop_mult: [2.5, 3.0, 3.5]
+      market_filter_source: [QQQ_trend, SPY_trend]
+      market_filter_threshold: [0.0]
+
+  leveraged_etf_guardrail:
+    max_combinations: 4
+    applies_to:
+      leveraged_only: true
+      tickers: [TQQQ, QLD, UPRO, SSO]
+    params:
+      underlying: [null]
+      underlying_ma: [100, 150, 200]
+      vol_window: [20, 60]
+      max_underlying_vol: [0.20, 0.25, 0.30, 0.35]
+      max_asset_vol: [0.45, 0.65, 0.85]
+      drawdown_cut: [0.15, 0.20, 0.25, 0.30]
+      cooldown_days: [5, 10, 20]
+      atr_stop_mult: [3.0, 3.5, 4.0, 5.0]
+
+rotation_strategy:
+  enabled: true
+  candidate_pool: [QQQ, QLD, TQQQ, SOXX, XLK, GLD, TLT, SHY]
+  params:
+    rebalance: [W, M]
+    lookback: [60, 120, 180]
+    top_k: [1, 2, 3]
+    risk_adjust: [return_only, return_div_vol]
+    safe_asset: [SHY, TLT, cash]
+    market_filter: [QQQ_MA200, SPY_MA200, none]

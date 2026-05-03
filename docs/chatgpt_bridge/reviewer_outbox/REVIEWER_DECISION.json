@@ -1,0 +1,11 @@
+{
+  "decision": "NEED_HUMAN",
+  "reason": "Safety violation in generated task: trade_or_broker_api_requested,nasdaq100_expansion_requested,sp500_expansion_requested",
+  "next_stage": "v9_reverse_audit_no_expansion",
+  "risk_level": "high",
+  "allow_expand_universe": false,
+  "allow_expand_nasdaq100": false,
+  "allow_trade_execution": false,
+  "requires_human_review": true,
+  "codex_task_file": "docs/chatgpt_bridge/reviewer_outbox/NEXT_CODEX_TASK.md"
+}
