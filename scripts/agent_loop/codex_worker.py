@@ -53,6 +53,12 @@ def run_codex_worker(config: dict[str, Any], task_path: Path, timeout_sec: int =
         base.append("--skip-git-repo-check")
     if status.get("supports_output_last_message"):
         base.extend(["-o", str(last_message)])
+    approval = str(codex_cfg.get("approval", "")).lower()
+    if status.get("supports_bypass_approvals_and_sandbox") and approval in {"full-auto", "full_auto", "bypass", "danger-full-access"}:
+        bypass = list(base)
+        bypass.append("--dangerously-bypass-approvals-and-sandbox")
+        bypass.append("-")
+        attempts.append(bypass)
     if status.get("supports_full_auto"):
         full = list(base)
         full.append("--full-auto")

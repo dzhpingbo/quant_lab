@@ -11,13 +11,14 @@ from bridge_io import (
     bridge_dir,
     bridge_mode,
     codex_status,
-    detect_safety_violation,
+    detect_safety_violation_details,
     project_root,
-    read_bridge_current_task,
+    read_bridge_current_task_info,
     read_json,
     read_text,
     rel_path,
     run_cmd,
+    safety_violation_ids,
     summarize_review_files,
     write_json,
     write_text,
@@ -33,7 +34,8 @@ def build_review_task(config: dict[str, Any], round_index: int) -> Path:
     task_path = rel_path(config, codex_cfg.get("reviewer_task", "docs/chatgpt_bridge/reviewer_inbox/REVIEW_TASK.md"))
     template = read_text(root / "scripts" / "agent_loop" / "reviewer_prompt_template.md", max_chars=20000)
     review = summarize_review_files(config)
-    current_task = read_bridge_current_task(config)
+    current_task_info = read_bridge_current_task_info(config)
+    current_task = str(current_task_info.get("text", ""))
     current_task_header = "## GitHub Issue CURRENT_TASK" if bridge_mode(config) == "github_issue" else "## Local CURRENT_TASK"
     text = f"""{template}
 
@@ -44,6 +46,8 @@ def build_review_task(config: dict[str, Any], round_index: int) -> Path:
 round_index: `{round_index}`
 project_root: `{root}`
 bridge_mode: `{bridge_mode(config)}`
+current_task_source: `{current_task_info.get("source", "")}`
+current_task_source_kind: `{current_task_info.get("source_kind", "")}`
 
 {current_task_header}
 
@@ -108,6 +112,12 @@ def run_codex_reviewer(config: dict[str, Any], task_path: Path, timeout_sec: int
         base.append("--skip-git-repo-check")
     if status.get("supports_output_last_message"):
         base.extend(["-o", str(last_message)])
+    approval = str(codex_cfg.get("approval", "")).lower()
+    if status.get("supports_bypass_approvals_and_sandbox") and approval in {"full-auto", "full_auto", "bypass", "danger-full-access"}:
+        bypass = list(base)
+        bypass.append("--dangerously-bypass-approvals-and-sandbox")
+        bypass.append("-")
+        attempts.append(bypass)
     if status.get("supports_full_auto"):
         full = list(base)
         full.append("--full-auto")
@@ -171,11 +181,13 @@ def validate_reviewer_outputs(config: dict[str, Any]) -> dict[str, Any]:
         result["error"] = f"Invalid reviewer decision: {raw}"
         result["decision"] = decision
         return result
-    violations = detect_safety_violation(config, task_path.read_text(encoding="utf-8", errors="replace"))
+    violation_details = detect_safety_violation_details(config, task_path.read_text(encoding="utf-8", errors="replace"))
+    violations = safety_violation_ids(violation_details)
     if violations and raw == "CONTINUE":
         decision["decision"] = "NEED_HUMAN"
         decision["requires_human_review"] = True
         decision["reason"] = f"Safety violation in generated task: {','.join(violations)}"
+        decision["safety_violation_details"] = violation_details
         write_json(decision_path, decision)
         write_text(task_path, "暂停执行，等待用户/ChatGPT 人工审阅。\n")
         raw = "NEED_HUMAN"

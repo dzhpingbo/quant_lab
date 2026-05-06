@@ -20,6 +20,7 @@ from bridge_io import (
     read_text,
     rel_path,
     run_cmd,
+    safety_violation_ids,
     truncate_large_text,
     write_json,
     write_text,
@@ -46,6 +47,22 @@ def github_config(config: dict[str, Any]) -> dict[str, Any]:
     return dict(config.get("bridge", {}).get("github", {}) or {})
 
 
+def gh_command(config: dict[str, Any]) -> str:
+    configured = str(github_config(config).get("gh_command") or "").strip()
+    if configured:
+        return configured
+    found = shutil.which("gh")
+    if found:
+        return found
+    for candidate in [
+        r"C:\Program Files\GitHub CLI\gh.exe",
+        r"C:\Program Files (x86)\GitHub CLI\gh.exe",
+    ]:
+        if Path(candidate).exists():
+            return candidate
+    return "gh"
+
+
 def state_dir(config: dict[str, Any]) -> Path:
     gh_cfg = github_config(config)
     value = gh_cfg.get("state_dir") or config.get("bridge", {}).get("state_dir") or "docs/chatgpt_bridge/github_state"
@@ -57,38 +74,43 @@ def init_bridge(config: dict[str, Any]) -> dict[str, Any]:
     info = find_or_create_control_issue(config)
     config["_github_bridge"] = info
     issue = read_control_issue(config)
-    current_task = parse_current_task(issue)
+    current_task_info = parse_current_task_info(issue)
+    current_task = str(current_task_info.get("text", ""))
     update_state_files(
         config,
         current_task=current_task,
+        current_task_source=current_task_info,
         round_summary=render_round_summary(
             {
                 "status": "github_bridge_initialized",
                 "repo": info.get("repo", ""),
                 "issue_number": info.get("issue_number"),
                 "issue_url": info.get("issue_url", ""),
+                "current_task_source": current_task_info.get("source", ""),
             }
         ),
     )
-    return {**info, "current_task_present": bool(current_task.strip())}
+    return {**info, "current_task_present": bool(current_task.strip()), "current_task_source": current_task_info.get("source", ""), "current_task_source_kind": current_task_info.get("source_kind", "")}
 
 
 def ensure_gh_auth(config: dict[str, Any]) -> dict[str, Any]:
     """Check gh CLI and auth state with clear setup hints on failure."""
     root = project_root(config)
-    if shutil.which("gh") is None:
+    gh = gh_command(config)
+    if gh == "gh" and shutil.which("gh") is None:
         raise GitHubBridgeError(_setup_hint("GitHub CLI not found: gh is not installed or not on PATH.", root))
 
-    version = run_cmd(["gh", "--version"], root, timeout=30)
-    auth = run_cmd(["gh", "auth", "status"], root, timeout=30)
+    version = run_cmd([gh, "--version"], root, timeout=30)
+    auth = run_cmd([gh, "auth", "status"], root, timeout=30)
     remotes = run_cmd(["git", "remote", "-v"], root, timeout=30)
     diagnostics = {
+        "gh_command": gh,
         "gh_version_returncode": version.returncode,
         "gh_version_stdout": version.stdout.strip(),
         "gh_version_stderr": version.stderr.strip(),
         "gh_auth_status_returncode": auth.returncode,
-        "gh_auth_status_stdout": auth.stdout.strip(),
-        "gh_auth_status_stderr": auth.stderr.strip(),
+        "gh_auth_status_stdout": redact_sensitive_cli_output(auth.stdout.strip()),
+        "gh_auth_status_stderr": redact_sensitive_cli_output(auth.stderr.strip()),
         "git_remote_returncode": remotes.returncode,
         "git_remote_stdout": remotes.stdout.strip(),
         "git_remote_stderr": remotes.stderr.strip(),
@@ -246,10 +268,18 @@ def read_control_issue(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def parse_current_task(issue: dict[str, Any]) -> str:
-    task = parse_latest_section(issue, "CURRENT_TASK")
+    task = str(parse_current_task_info(issue).get("text", ""))
     if "请在这里写入下一轮任务" in task:
         return ""
     return task
+
+
+def parse_current_task_info(issue: dict[str, Any]) -> dict[str, Any]:
+    info = parse_latest_section_with_source(issue, "CURRENT_TASK")
+    task = str(info.get("text", ""))
+    if "请在这里写入下一轮任务" in task:
+        info["text"] = ""
+    return info
 
 
 def parse_next_codex_task(issue: dict[str, Any]) -> str:
@@ -257,10 +287,14 @@ def parse_next_codex_task(issue: dict[str, Any]) -> str:
 
 
 def read_current_task(config: dict[str, Any]) -> str:
+    return str(read_current_task_info(config).get("text", ""))
+
+
+def read_current_task_info(config: dict[str, Any]) -> dict[str, Any]:
     issue = read_control_issue(config)
-    current_task = parse_current_task(issue)
-    update_state_files(config, current_task=current_task)
-    return current_task
+    current_task_info = parse_current_task_info(issue)
+    update_state_files(config, current_task=str(current_task_info.get("text", "")), current_task_source=current_task_info)
+    return current_task_info
 
 
 def read_next_codex_task(config: dict[str, Any]) -> str:
@@ -343,13 +377,16 @@ def publish_round_summary(config: dict[str, Any], summary: dict[str, Any], round
 def publish_need_human(
     config: dict[str, Any],
     reason: str,
-    violations: list[str] | None = None,
+    violations: list[Any] | None = None,
     round_index: int | None = None,
 ) -> dict[str, Any]:
+    violation_payload = violations or []
+    violation_ids = safety_violation_ids(violation_payload) if violation_payload and isinstance(violation_payload[0], dict) else [str(v) for v in violation_payload]
     decision = {
         "decision": "NEED_HUMAN",
         "reason": reason,
-        "violations": violations or [],
+        "violations": violation_ids,
+        "violation_details": violation_payload,
         "requires_human_review": True,
         "written_at": datetime.now().isoformat(timespec="seconds"),
     }
@@ -358,7 +395,7 @@ def publish_need_human(
         [
             f"# Human Action Required{_round_suffix(round_index)}",
             _section("REVIEWER_DECISION", f"```json\n{json.dumps(decision, ensure_ascii=False, indent=2)}\n```"),
-            _section("SAFETY_GATE_RESULT", f"Blocked by safety gate: {', '.join(violations or []) or reason}"),
+            _section("SAFETY_GATE_RESULT", f"```json\n{json.dumps({'blocked': True, 'violations': violation_ids, 'details': violation_payload}, ensure_ascii=False, indent=2)}\n```"),
             _section("HUMAN_ACTION_REQUIRED", reason),
         ]
     )
@@ -399,6 +436,7 @@ def update_state_files(
     config: dict[str, Any],
     *,
     current_task: str | None = None,
+    current_task_source: dict[str, Any] | None = None,
     reviewer_decision: dict[str, Any] | None = None,
     next_codex_task: str | None = None,
     codex_run_status: dict[str, Any] | None = None,
@@ -410,6 +448,8 @@ def update_state_files(
     written: dict[str, str] = {}
     if current_task is not None:
         written["CURRENT_TASK.md"] = str(write_text(target / "CURRENT_TASK.md", current_task))
+    if current_task_source is not None:
+        written["CURRENT_TASK_SOURCE.json"] = str(write_json(target / "CURRENT_TASK_SOURCE.json", current_task_source))
     if reviewer_decision is not None:
         written["REVIEWER_DECISION.json"] = str(write_json(target / "REVIEWER_DECISION.json", reviewer_decision))
     if next_codex_task is not None:
@@ -471,24 +511,50 @@ def gh_json(config: dict[str, Any], args: list[str]) -> Any:
 
 
 def run_gh(config: dict[str, Any], args: list[str]):
-    return run_cmd(["gh", *args], project_root(config), timeout=120)
+    return run_cmd([gh_command(config), *args], project_root(config), timeout=120)
 
 
 def parse_latest_section(issue: dict[str, Any], section_name: str) -> str:
-    candidates: list[tuple[str, str]] = []
+    return str(parse_latest_section_with_source(issue, section_name).get("text", "")).strip()
+
+
+def parse_latest_section_with_source(issue: dict[str, Any], section_name: str) -> dict[str, Any]:
+    candidates: list[dict[str, Any]] = []
     body = issue.get("body") or ""
     found = extract_section(body, section_name)
     if found:
-        candidates.append(("0000-issue-body", found))
-    for comment in issue.get("comments") or []:
+        candidates.append(
+            {
+                "sort_key": "0000-issue-body",
+                "text": found,
+                "source": "issue_body",
+                "source_kind": "issue_body",
+                "created_at": "",
+                "url": issue.get("url", ""),
+            }
+        )
+    for index, comment in enumerate(issue.get("comments") or []):
         text = comment.get("body") or ""
         found = extract_section(text, section_name)
         if found:
-            candidates.append((str(comment.get("createdAt") or ""), found))
+            comment_id = str(comment.get("id") or comment.get("databaseId") or index)
+            candidates.append(
+                {
+                    "sort_key": str(comment.get("createdAt") or comment.get("updatedAt") or f"9999-{index:06d}"),
+                    "text": found,
+                    "source": f"issue_comment:{comment_id}",
+                    "source_kind": "issue_comment_latest",
+                    "created_at": str(comment.get("createdAt") or ""),
+                    "url": str(comment.get("url") or ""),
+                }
+            )
     if not candidates:
-        return ""
-    candidates.sort(key=lambda item: item[0])
-    return candidates[-1][1].strip()
+        return {"text": "", "source": "", "source_kind": "", "created_at": "", "url": ""}
+    candidates.sort(key=lambda item: str(item.get("sort_key", "")))
+    latest = dict(candidates[-1])
+    latest["text"] = str(latest.get("text", "")).strip()
+    latest.pop("sort_key", None)
+    return latest
 
 
 def extract_section(text: str, section_name: str) -> str:
@@ -582,3 +648,13 @@ def _setup_hint(reason: str, root: Path, diagnostics: dict[str, Any] | None = No
     if diagnostics:
         lines.extend(["", "Diagnostics:", json.dumps(diagnostics, ensure_ascii=False, indent=2)])
     return "\n".join(lines)
+
+
+def redact_sensitive_cli_output(text: str) -> str:
+    redacted = []
+    for line in (text or "").splitlines():
+        if re.search(r"\b(token|api key|secret|credential|password)\b", line, flags=re.IGNORECASE):
+            redacted.append(re.sub(r":.*$", ": [redacted]", line))
+        else:
+            redacted.append(line)
+    return "\n".join(redacted)

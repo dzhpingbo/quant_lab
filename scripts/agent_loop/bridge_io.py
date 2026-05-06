@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import re
 import shutil
 import subprocess
 import sys
@@ -76,12 +78,20 @@ def initialize_bridge(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def read_bridge_current_task(config: dict[str, Any]) -> str:
-    if bridge_mode(config) == "github_issue":
-        from github_bridge import read_current_task
+    return str(read_bridge_current_task_info(config).get("text", ""))
 
-        return read_current_task(config)
+
+def read_bridge_current_task_info(config: dict[str, Any]) -> dict[str, Any]:
+    if bridge_mode(config) == "github_issue":
+        from github_bridge import read_current_task_info
+
+        return read_current_task_info(config)
     task_path = bridge_dir(config) / "reviewer_inbox" / "CURRENT_TASK.md"
-    return read_text(task_path, 12000)
+    return {
+        "text": read_text(task_path, 12000),
+        "source": f"local_file:{task_path}",
+        "source_kind": "local_file",
+    }
 
 
 def read_bridge_next_codex_task(config: dict[str, Any]) -> str:
@@ -129,7 +139,7 @@ def publish_bridge_round_summary(config: dict[str, Any], summary: dict[str, Any]
     return publish_round_summary(config, summary, round_index=round_index)
 
 
-def publish_bridge_need_human(config: dict[str, Any], reason: str, violations: list[str], round_index: int | None = None) -> dict[str, Any]:
+def publish_bridge_need_human(config: dict[str, Any], reason: str, violations: list[Any], round_index: int | None = None) -> dict[str, Any]:
     if bridge_mode(config) != "github_issue":
         return {}
     from github_bridge import publish_need_human
@@ -139,8 +149,113 @@ def publish_bridge_need_human(config: dict[str, Any], reason: str, violations: l
 
 def find_latest_run(config: dict[str, Any]) -> Path | None:
     base = outputs_dir(config)
-    runs = sorted([p for p in base.glob("run_????????_??????") if p.is_dir()], key=lambda p: p.name)
+    patterns = [
+        "run_????????_??????",
+        "formal_v9_????????_??????",
+        "v82_canonical_rebuild_????????_??????",
+        "score_provenance_alignment_audit_????????_??????",
+        "v82_v9_replay_diff_audit_????????_??????",
+        "v9_reverse_audit_????????_??????",
+    ]
+    runs = []
+    for pattern in patterns:
+        runs.extend([p for p in base.glob(pattern) if p.is_dir()])
+    runs = sorted(set(runs), key=lambda p: p.stat().st_mtime if p.exists() else 0)
     return runs[-1] if runs else None
+
+
+_WINDOWS_CODEX_FALLBACK_PATHS: list[str] = [
+    # Standalone installer (Windows) — most common if NOT installed via npm
+    os.path.join(os.path.expanduser("~"), ".codex", ".sandbox-bin", "codex.exe"),
+    # VS Code ChatGPT extension bundled binary
+    os.path.join(
+        os.environ.get("USERPROFILE", ""),
+        ".vscode", "extensions",
+    ),
+    # npm global
+    os.path.join(os.environ.get("APPDATA", ""), "npm", "codex.cmd"),
+    os.path.join(os.environ.get("APPDATA", ""), "npm", "codex"),
+    # pnpm global
+    os.path.join(os.environ.get("LOCALAPPDATA", ""), "pnpm", "codex.cmd"),
+    os.path.join(os.environ.get("LOCALAPPDATA", ""), "pnpm", "codex"),
+    # system-wide nodejs
+    r"C:\Program Files\nodejs\codex.cmd",
+    r"C:\Program Files\nodejs\codex",
+    # volta
+    os.path.join(os.environ.get("VOLTA_HOME", ""), "bin", "codex.exe"),
+]
+
+
+def resolve_executable(command: str) -> str:
+    """Resolve a command to an absolute executable path.
+
+    Resolution order:
+    1. If ``command`` is already an absolute path and exists → use as-is.
+    2. ``shutil.which(command)`` on the current PATH.
+    3. On Windows, if the bare command name is ``codex`` (or ``codex.cmd``),
+       probe a list of well-known npm / pnpm / volta / fnm install locations.
+    4. If still unresolved, raise ``FileNotFoundError`` with a diagnostic
+       message listing the current PATH and suggested fix actions.
+
+    This function never reads or prints credentials / tokens.
+    """
+    # Case 1: absolute path already given
+    p = Path(command)
+    if p.is_absolute():
+        if p.exists():
+            return str(p)
+        raise FileNotFoundError(
+            f"[resolve_executable] Codex CLI not found at configured path:\n"
+            f"  command = {command!r}\n"
+            f"Please update loop_config_auth.yaml → codex.command to the correct absolute path."
+        )
+
+    # Case 2: shutil.which on PATH
+    found = shutil.which(command)
+    if found:
+        return found
+
+    # Case 3: Windows fallback probe for bare "codex" / "codex.cmd"
+    bare = Path(command).stem.lower()  # strips .cmd / .exe suffix if any
+    if sys.platform.startswith("win") and bare == "codex":
+        for candidate in _WINDOWS_CODEX_FALLBACK_PATHS:
+            if candidate and Path(candidate).exists():
+                return candidate
+
+    # Case 4: not found anywhere — raise with diagnostic
+    path_dirs = os.environ.get("PATH", "")
+    npm_prefix_hint = ""
+    npm_exe = shutil.which("npm")
+    if npm_exe:
+        try:
+            result = subprocess.run(
+                [npm_exe, "config", "get", "prefix"],
+                capture_output=True, text=True, timeout=10,
+            )
+            npm_prefix = result.stdout.strip()
+            npm_prefix_hint = (
+                f"\n  npm prefix = {npm_prefix!r}"
+                f"\n  Expected codex.cmd at: {os.path.join(npm_prefix, 'codex.cmd')}"
+            )
+        except Exception:
+            pass
+
+    raise FileNotFoundError(
+        f"[resolve_executable] Codex CLI executable not found.\n"
+        f"  command configured = {command!r}\n"
+        f"  shutil.which result = None\n"
+        f"{npm_prefix_hint}"
+        f"\nDiagnosis steps:\n"
+        f"  1. Run in PowerShell:  where.exe codex\n"
+        f"  2. Run:                npm config get prefix\n"
+        f"  3. Check if codex.cmd exists in that prefix directory.\n"
+        f"  4. If not installed, run:  npm install -g @openai/codex\n"
+        f"  5. After finding the path, update loop_config_auth.yaml:\n"
+        f"       codex:\n"
+        f"         command: \"C:/Users/<you>/AppData/Roaming/npm/codex.cmd\"\n"
+        f"\nCurrent PATH entries:\n"
+        + "\n".join(f"  {d}" for d in path_dirs.split(os.pathsep)[:20])
+    )
 
 
 def run_cmd(cmd: list[str], cwd: Path, input_text: str | None = None, timeout: int | None = None) -> subprocess.CompletedProcess[str]:
@@ -162,7 +277,13 @@ def run_cmd(cmd: list[str], cwd: Path, input_text: str | None = None, timeout: i
 
 def codex_status(config: dict[str, Any]) -> dict[str, Any]:
     root = project_root(config)
-    command = str(config.get("codex", {}).get("command", "codex"))
+    raw_command = str(config.get("codex", {}).get("command", "codex"))
+    # Resolve to absolute path; raises FileNotFoundError with diagnostics if not found.
+    command = resolve_executable(raw_command)
+    # Write resolved path back into config so reviewer / worker see the same value.
+    if "codex" not in config or not isinstance(config.get("codex"), dict):
+        config["codex"] = {}
+    config["codex"]["command"] = command
     version = run_cmd([command, "--version"], root)
     help_proc = run_cmd([command, "exec", "--help"], root)
     help_text = (help_proc.stdout or "") + (help_proc.stderr or "")
@@ -178,6 +299,7 @@ def codex_status(config: dict[str, Any]) -> dict[str, Any]:
         "supports_cd": "--cd" in help_text,
         "supports_skip_git_repo_check": "--skip-git-repo-check" in help_text,
         "supports_output_last_message": "--output-last-message" in help_text or "-o," in help_text,
+        "supports_bypass_approvals_and_sandbox": "--dangerously-bypass-approvals-and-sandbox" in help_text,
         "help_excerpt": truncate_large_text(help_text, 4000),
     }
 
@@ -280,81 +402,274 @@ def write_json(path: Path, data: dict[str, Any]) -> Path:
 
 def archive_round(config: dict[str, Any], round_index: int) -> Path:
     base = bridge_dir(config)
-    target = base / "rounds" / f"round_{round_index:03d}"
+    target = next_round_archive_path(base / "rounds", round_index)
     target.mkdir(parents=True, exist_ok=True)
     for rel in ["reviewer_inbox", "reviewer_outbox", "codex_inbox", "codex_outbox"]:
         src = base / rel
         if src.exists():
             dst = target / rel
-            if dst.exists():
-                shutil.rmtree(dst)
             shutil.copytree(src, dst)
     write_json(target / "round_archive.json", {"round": round_index, "archived_at": datetime.now().isoformat(timespec="seconds")})
     return target
 
 
+def next_round_archive_path(rounds_dir: Path, round_index: int) -> Path:
+    base = rounds_dir / f"round_{round_index:03d}"
+    if not base.exists():
+        return base
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    candidate = rounds_dir / f"round_{round_index:03d}_{timestamp}"
+    counter = 2
+    while candidate.exists():
+        candidate = rounds_dir / f"round_{round_index:03d}_{timestamp}_{counter}"
+        counter += 1
+    return candidate
+
+
 def detect_safety_violation(config: dict[str, Any], text: str) -> list[str]:
-    lowered = text.lower()
-    violations = []
-    if not config.get("safety", {}).get("allow_trade_execution", False) and any(
-        _contains_action_phrase(lowered, k)
-        for k in [
-            "place order",
-            "submit order",
-            "send order",
-            "real money",
-            "live trading",
-            "trade execution",
-            "自动下单",
-            "下单",
-            "实盘",
-            "真实交易",
-            "真实账户",
-        ]
-    ):
-        violations.append("trade_execution_requested")
-    if not config.get("safety", {}).get("allow_broker_api", False) and any(
-        _contains_action_phrase(lowered, k) for k in ["broker api", "connect to broker", "连接券商", "券商 api", "券商接口"]
-    ):
-        violations.append("trade_or_broker_api_requested")
-    if not config.get("safety", {}).get("allow_expand_nasdaq100", False) and any(
-        _contains_action_phrase(lowered, k)
-        for k in ["expand nasdaq100", "nasdaq100 universe", "enter nasdaq100", "扩 nasdaq100", "扩展 nasdaq100", "进入 nasdaq100"]
-    ):
-        violations.append("nasdaq100_expansion_requested")
-    if not config.get("safety", {}).get("allow_expand_sp500", False) and any(
-        _contains_action_phrase(lowered, k) for k in ["expand s&p500", "expand sp500", "s&p500 universe", "sp500 universe", "扩 s&p500", "扩 sp500", "进入 s&p500", "进入 sp500"]
-    ):
-        violations.append("sp500_expansion_requested")
-    if not config.get("safety", {}).get("allow_delete_outputs", False) and any(
-        _contains_action_phrase(lowered, k) for k in ["delete outputs", "删除 outputs", "remove outputs", "recursive delete", "大范围删除"]
-    ):
-        violations.append("delete_outputs_requested")
-    if any(_contains_action_phrase(lowered, k) for k in ["api key", "secret", "token", "credential", "密钥", "凭据"]):
-        violations.append("credential_or_secret_requested")
-    if not config.get("safety", {}).get("allow_git_push", False) and any(
-        _contains_action_phrase(lowered, k) for k in ["git push", "automatic push", "auto push", "自动 push", "自动推送"]
-    ):
-        violations.append("automatic_git_push_requested")
-    if any(_contains_action_phrase(lowered, k) for k in ["modify system config", "修改系统配置", "system configuration"]):
-        violations.append("system_config_change_requested")
-    return violations
+    """Return unique safety violation ids for compatibility with older callers."""
+    return safety_violation_ids(detect_safety_violation_details(config, text))
+
+
+def safety_violation_ids(details: list[dict[str, Any]]) -> list[str]:
+    seen: set[str] = set()
+    ids: list[str] = []
+    for item in details:
+        violation = str(item.get("violation", ""))
+        if violation and violation not in seen:
+            seen.add(violation)
+            ids.append(violation)
+    return ids
+
+
+def detect_safety_violation_details(config: dict[str, Any], text: str) -> list[dict[str, Any]]:
+    """Detect only real hard-block actions and return debuggable snippets.
+
+    The safety gate has three layers:
+    1. Match explicit high-risk action phrases such as placing orders, broker
+       connections, and reading/using credentials.
+    2. Ignore matches that are clearly negated, policy text, classification
+       rules, or "no broker / no API key" style safety instructions.
+    3. Allow offline audit/replay/backtest tasks when no real hard-block action
+       remains after layer 2.
+    """
+    if not text:
+        return []
+    rules = _safety_rules(config)
+    details: list[dict[str, Any]] = []
+    for rule in rules:
+        if not rule["enabled"]:
+            continue
+        for pattern, label in rule["patterns"]:
+            for match in re.finditer(pattern, text, flags=re.IGNORECASE):
+                if _match_is_policy_or_negated(text, match.start(), match.end()):
+                    continue
+                details.append(
+                    {
+                        "violation": rule["violation"],
+                        "phrase": label,
+                        "matched_text": match.group(0),
+                        "start": match.start(),
+                        "end": match.end(),
+                        "context": _context_window(text, match.start(), match.end()),
+                        "line": _line_context(text, match.start(), match.end()),
+                    }
+                )
+    return details
+
+
+def _safety_rules(config: dict[str, Any]) -> list[dict[str, Any]]:
+    safety = config.get("safety", {}) or {}
+    return [
+        {
+            "violation": "trade_or_broker_api_requested",
+            "enabled": not safety.get("allow_broker_api", False),
+            "patterns": [
+                (r"\bconnect\s+to\s+broker\b", "connect to broker"),
+                (r"\buse\s+broker\s+api\b", "use broker API"),
+                (r"\bbroker\s+api\b", "broker API"),
+                (r"\bconnect\s+exchange\b", "connect exchange"),
+                (r"连接券商", "连接券商"),
+                (r"券商\s*(?:api|接口)", "券商接口"),
+            ],
+        },
+        {
+            "violation": "trade_execution_requested",
+            "enabled": not safety.get("allow_trade_execution", False),
+            "patterns": [
+                (r"\bplace\s+order\b", "place order"),
+                (r"\bsubmit\s+order\b", "submit order"),
+                (r"\bsend\s+order\b", "send order"),
+                (r"\bmarket\s+order\b", "market order"),
+                (r"\blimit\s+order\b", "limit order"),
+                (r"\bcancel\s+order\b", "cancel order"),
+                (r"\blive\s+trading\b", "live trading"),
+                (r"\breal\s+money\b", "real money"),
+                (r"\bproduction\s+trading\b", "production trading"),
+                (r"\bauto\s+execute\s+trades\b", "auto execute trades"),
+                (r"\buse\s+real\s+account\b", "use real account"),
+                (r"实盘交易", "实盘交易"),
+                (r"自动下单", "自动下单"),
+                (r"提交订单", "提交订单"),
+                (r"真实账户", "真实账户"),
+                (r"(?<!不)(?<!不要)(?<!不得)(?<!禁止)(?<!不能)下单", "下单"),
+            ],
+        },
+        {
+            "violation": "credential_or_secret_requested",
+            "enabled": True,
+            "patterns": [
+                (r"\bread\s+api\s+key\b", "read API key"),
+                (r"\bload\s+api\s+key\b", "load API key"),
+                (r"\buse\s+api\s+key\b", "use API key"),
+                (r"\bread\s+secret\b", "read secret"),
+                (r"\bload\s+secret\b", "load secret"),
+                (r"\buse\s+secret(?:\s+token)?\b", "use secret"),
+                (r"\bread\s+token\b", "read token"),
+                (r"\bload\s+token\b", "load token"),
+                (r"\buse\s+token\b", "use token"),
+                (r"\bread\s+credential\b", "read credential"),
+                (r"\bload\s+credential\b", "load credential"),
+                (r"\buse\s+credential\b", "use credential"),
+                (r"读取密钥", "读取密钥"),
+                (r"使用密钥", "使用密钥"),
+                (r"读取凭证", "读取凭证"),
+                (r"使用凭证", "使用凭证"),
+                (r"读取\s*(?:api\s*key|secret|token|credential)", "读取 credential"),
+                (r"使用\s*(?:api\s*key|secret|token|credential)", "使用 credential"),
+            ],
+        },
+        {
+            "violation": "nasdaq100_expansion_requested",
+            "enabled": not safety.get("allow_expand_nasdaq100", False),
+            "patterns": [
+                (r"\bexpand\s+nasdaq100\b", "expand Nasdaq100"),
+                (r"\bnasdaq100\s+universe\b", "Nasdaq100 universe"),
+                (r"\benter\s+nasdaq100\b", "enter Nasdaq100"),
+                (r"扩展?\s*nasdaq100", "扩 Nasdaq100"),
+                (r"进入\s*nasdaq100", "进入 Nasdaq100"),
+            ],
+        },
+        {
+            "violation": "sp500_expansion_requested",
+            "enabled": not safety.get("allow_expand_sp500", False),
+            "patterns": [
+                (r"\bexpand\s+s&p500\b", "expand S&P500"),
+                (r"\bexpand\s+sp500\b", "expand SP500"),
+                (r"\bs&p500\s+universe\b", "S&P500 universe"),
+                (r"\bsp500\s+universe\b", "SP500 universe"),
+                (r"扩展?\s*(?:s&p500|sp500)", "扩 S&P500"),
+                (r"进入\s*(?:s&p500|sp500)", "进入 S&P500"),
+            ],
+        },
+        {
+            "violation": "delete_outputs_requested",
+            "enabled": not safety.get("allow_delete_outputs", False),
+            "patterns": [
+                (r"\bdelete\s+outputs\b", "delete outputs"),
+                (r"\bremove\s+outputs\b", "remove outputs"),
+                (r"\brecursive\s+delete\b", "recursive delete"),
+                (r"删除\s*outputs", "删除 outputs"),
+                (r"大范围删除", "大范围删除"),
+            ],
+        },
+        {
+            "violation": "automatic_git_push_requested",
+            "enabled": not safety.get("allow_git_push", False),
+            "patterns": [
+                (r"\bgit\s+push\b", "git push"),
+                (r"\bautomatic\s+push\b", "automatic push"),
+                (r"\bauto\s+push\b", "auto push"),
+                (r"自动\s*push", "自动 push"),
+                (r"自动推送", "自动推送"),
+            ],
+        },
+        {
+            "violation": "system_config_change_requested",
+            "enabled": True,
+            "patterns": [
+                (r"\bmodify\s+system\s+config(?:uration)?\b", "modify system config"),
+                (r"修改系统配置", "修改系统配置"),
+            ],
+        },
+        {
+            "violation": "external_network_download_requested",
+            "enabled": not safety.get("allow_external_network_download", False),
+            "patterns": [
+                (r"\bdownload\s+(?:market\s+)?data\b", "download market data"),
+                (r"联网下载行情", "联网下载行情"),
+            ],
+        },
+    ]
 
 
 def _contains_action_phrase(text: str, phrase: str) -> bool:
-    start = 0
-    phrase = phrase.lower()
-    while True:
-        idx = text.find(phrase, start)
-        if idx < 0:
-            return False
-        window = text[max(0, idx - 80) : min(len(text), idx + len(phrase) + 80)]
-        if not _is_negated_safety_context(window):
+    pattern = re.escape(phrase)
+    for match in re.finditer(pattern, text, flags=re.IGNORECASE):
+        if not _match_is_policy_or_negated(text, match.start(), match.end()):
             return True
-        start = idx + len(phrase)
+    return False
+
+
+def _match_is_policy_or_negated(text: str, start: int, end: int) -> bool:
+    prefix = text[max(0, start - 80) : start]
+    context = _context_window(text, start, end, radius=180)
+    line = _line_context(text, start, end)
+    paragraph = _paragraph_context(text, start, end)
+    lowered_context = f"{context}\n{line}\n{paragraph}".lower()
+    if _is_negated_safety_context(prefix):
+        return True
+    allow_markers = [
+        "不要下单",
+        "不得下单",
+        "不能下单",
+        "不允许下单",
+        "禁止下单",
+        "不要连接券商",
+        "不得连接券商",
+        "禁止连接券商",
+        "不要实盘",
+        "不得实盘",
+        "禁止实盘",
+        "不要使用 api key",
+        "不得使用 api key",
+        "禁止使用 api key",
+        "不读取 api key",
+        "不使用 api key",
+        "不读取 secret",
+        "不使用 secret",
+        "不读取 token",
+        "不使用 token",
+        "不读取 credential",
+        "不使用 credential",
+        "hard block 测试",
+        "hard block test",
+        "blocked_by_safety_gate 分类规则",
+        "blocked_by_safety_gate",
+        "分类规则",
+        "禁止事项",
+        "safety gate 规则说明",
+        "仅限离线研究",
+        "只读取本地项目",
+        "local-only",
+        "offline research",
+        "no broker",
+        "no order",
+        "no live trading",
+        "no api key",
+        "no secret",
+        "no token",
+        "no credential",
+        "审计是否存在",
+        "使用风险",
+        "交易风险",
+        "风险",
+    ]
+    return any(marker in lowered_context for marker in allow_markers)
 
 
 def _is_negated_safety_context(window: str) -> bool:
+    lowered = window.lower()
     negations = [
         "do not",
         "don't",
@@ -373,7 +688,32 @@ def _is_negated_safety_context(window: str) -> bool:
         "不扩",
         "不扩展",
         "无需",
-        "不要读取",
-        "不要使用",
+        "只审计",
+        "仅审计",
+        "审计是否",
+        "检查是否",
     ]
-    return any(word in window for word in negations)
+    return any(word in lowered for word in negations)
+
+
+def _context_window(text: str, start: int, end: int, radius: int = 120) -> str:
+    left = max(0, start - radius)
+    right = min(len(text), end + radius)
+    return text[left:right].replace("\r", "").replace("\n", "\\n")
+
+
+def _line_context(text: str, start: int, end: int) -> str:
+    left = text.rfind("\n", 0, start) + 1
+    right = text.find("\n", end)
+    if right < 0:
+        right = len(text)
+    return text[left:right].strip()
+
+
+def _paragraph_context(text: str, start: int, end: int) -> str:
+    left = text.rfind("\n\n", 0, start)
+    left = 0 if left < 0 else left + 2
+    right = text.find("\n\n", end)
+    if right < 0:
+        right = len(text)
+    return text[left:right].strip()

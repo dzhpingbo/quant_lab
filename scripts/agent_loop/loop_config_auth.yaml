@@ -12,11 +12,13 @@ bridge:
     issue_title: Codex Agent Loop Control
     create_issue_if_missing: true
     use_gh_cli: true
+    gh_command: "C:/Program Files/GitHub CLI/gh.exe"
     allow_commit_state_files: false
     allow_push: false
     state_dir: docs/chatgpt_bridge/github_state
 
 codex:
+  # Prefer PATH so the newer VS Code / CLI shim is used instead of stale sandbox-bin builds.
   command: "codex"
   reviewer_mode: "exec"
   worker_mode: "exec"

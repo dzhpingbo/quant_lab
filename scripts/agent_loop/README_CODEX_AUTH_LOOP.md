@@ -32,7 +32,7 @@ codex --help
 codex exec --help
 ```
 
-并按本机 help 自动适配 `--full-auto`、`--sandbox`、`--cd`、`--skip-git-repo-check`、`-o/--output-last-message` 等参数。
+并按本机 help 自动适配 `--full-auto`、`--dangerously-bypass-approvals-and-sandbox`、`--sandbox`、`--cd`、`--skip-git-repo-check`、`-o/--output-last-message` 等参数。当前 `codex.approval: full-auto` 表示在新版 CLI 没有 `--full-auto` 时使用 bypass 参数；安全边界仍由 loop 的安全门在 Worker 启动前拦截。
 
 ## GitHub 自动交互模式
 
@@ -49,6 +49,7 @@ bridge:
     issue_title: Codex Agent Loop Control
     create_issue_if_missing: true
     use_gh_cli: true
+    gh_command: C:/Program Files/GitHub CLI/gh.exe
     allow_commit_state_files: false
     allow_push: false
     state_dir: docs/chatgpt_bridge/github_state

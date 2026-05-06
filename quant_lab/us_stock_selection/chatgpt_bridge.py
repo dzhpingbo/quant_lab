@@ -26,7 +26,7 @@ FORBIDDEN_SUFFIXES = {".zip", ".parquet", ".pkl", ".joblib", ".bin", ".h5", ".fe
 TABLE_ALIASES = {
     "benchmark": ["benchmark"],
     "attribution": ["ticker_contribution", "attribution", "contribution"],
-    "stress_test": ["stress", "execution"],
+    "stress_test": ["stress", "execution", "cost_sensitivity"],
     "yearly_return": ["yearly_return", "annual_return"],
     "holdings_summary": ["monthly_holdings", "holdings"],
 }
@@ -48,9 +48,20 @@ class ReviewArtifacts:
 
 def find_latest_run(base_dir: Path | str = DEFAULT_OUTPUT_BASE) -> Path:
     base = Path(base_dir)
-    runs = sorted([p for p in base.glob("run_????????_??????") if p.is_dir()], key=lambda p: p.name)
+    patterns = [
+        "run_????????_??????",
+        "formal_v9_????????_??????",
+        "v82_canonical_rebuild_????????_??????",
+        "score_provenance_alignment_audit_????????_??????",
+        "v82_v9_replay_diff_audit_????????_??????",
+        "v9_reverse_audit_????????_??????",
+    ]
+    runs = []
+    for pattern in patterns:
+        runs.extend([p for p in base.glob(pattern) if p.is_dir()])
+    runs = sorted(set(runs), key=lambda p: p.stat().st_mtime if p.exists() else 0)
     if not runs:
-        raise FileNotFoundError(f"No run_YYYYMMDD_HHMMSS directories found under {base}")
+        raise FileNotFoundError(f"No supported run/audit directories found under {base}")
     return runs[-1]
 
 

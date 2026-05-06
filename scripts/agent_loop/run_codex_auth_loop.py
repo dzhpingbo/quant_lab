@@ -23,7 +23,7 @@ from bridge_io import (
     bridge_mode,
     call_publish_for_chatgpt,
     codex_status,
-    detect_safety_violation,
+    detect_safety_violation_details,
     ensure_bridge_dirs,
     find_latest_run,
     initialize_bridge,
@@ -33,8 +33,9 @@ from bridge_io import (
     publish_bridge_need_human,
     publish_bridge_round_summary,
     publish_bridge_worker_status,
-    read_bridge_current_task,
+    read_bridge_current_task_info,
     read_text,
+    safety_violation_ids,
     write_json,
 )
 from codex_reviewer import build_review_task, publish_reviewer_outputs, run_codex_reviewer, validate_reviewer_outputs, write_invalid_reviewer_stop
@@ -59,6 +60,11 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def emit_json(data: dict[str, Any]) -> None:
+    text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+    sys.stdout.buffer.write(text.encode("utf-8", errors="replace"))
+
+
 def main() -> None:
     args = parse_args()
     config_path = Path(args.config)
@@ -80,7 +86,7 @@ def main() -> None:
             "openai_api_key_present_but_unused": bool(os.environ.get("OPENAI_API_KEY")),
         }
         write_json(bridge_dir(config) / "codex_outbox" / "CODEX_RUN_STATUS.json", summary)
-        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        emit_json(summary)
         raise SystemExit(2)
     status = codex_status(config)
     latest = find_latest_run(config)
@@ -100,7 +106,7 @@ def main() -> None:
         summary["status"] = "codex_cli_unavailable"
         write_json(bridge_dir(config) / "codex_outbox" / "CODEX_RUN_STATUS.json", summary)
         publish_bridge_round_summary(config, summary, round_index=None)
-        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        emit_json(summary)
         raise SystemExit(1)
 
     if latest is not None:
@@ -122,16 +128,20 @@ def main() -> None:
         if publish_result:
             summary["bridge_publish_dry_run"] = publish_result
             write_json(bridge_dir(config) / "codex_outbox" / "CODEX_RUN_STATUS.json", summary)
-        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        emit_json(summary)
         return
 
     consecutive_failures = 0
     current_latest = latest
     for round_index in range(1, max_rounds + 1):
         round_status: dict[str, Any] = {"round": round_index, "phase": "review"}
-        current_task = read_bridge_current_task(config)
+        current_task_info = read_bridge_current_task_info(config)
+        current_task = str(current_task_info.get("text", ""))
         round_status["current_task_present"] = bool(current_task.strip())
-        current_task_violations = detect_safety_violation(config, current_task)
+        round_status["current_task_source"] = current_task_info.get("source", "")
+        round_status["current_task_source_kind"] = current_task_info.get("source_kind", "")
+        current_task_violation_details = detect_safety_violation_details(config, current_task)
+        current_task_violations = safety_violation_ids(current_task_violation_details)
         if current_task_violations:
             reason = f"CURRENT_TASK blocked by safety gate: {','.join(current_task_violations)}"
             write_invalid_reviewer_stop(config, reason)
@@ -141,11 +151,12 @@ def main() -> None:
                     "phase": "blocked_by_safety_gate",
                     "decision": "NEED_HUMAN",
                     "safety_violations": current_task_violations,
+                    "safety_violation_details": current_task_violation_details,
                     "reviewer_validation": validation,
                 }
             )
             publish_reviewer_outputs(config, validation, round_index)
-            publish_bridge_need_human(config, reason, current_task_violations, round_index=round_index)
+            publish_bridge_need_human(config, reason, current_task_violation_details, round_index=round_index)
             summary["rounds"].append(round_status)
             summary["status"] = "stopped_need_human"
             finalize_round(config, round_status, round_index)
@@ -200,13 +211,21 @@ def main() -> None:
         worker_task = copy_task_to_inbox(config)
         round_status["worker_task"] = str(worker_task)
         worker_task_text = read_text(worker_task, 30000)
-        worker_task_violations = detect_safety_violation(config, worker_task_text)
+        worker_task_violation_details = detect_safety_violation_details(config, worker_task_text)
+        worker_task_violations = safety_violation_ids(worker_task_violation_details)
         if worker_task_violations:
             reason = f"Worker task blocked by safety gate: {','.join(worker_task_violations)}"
-            round_status.update({"phase": "blocked_by_safety_gate", "decision": "NEED_HUMAN", "safety_violations": worker_task_violations})
+            round_status.update(
+                {
+                    "phase": "blocked_by_safety_gate",
+                    "decision": "NEED_HUMAN",
+                    "safety_violations": worker_task_violations,
+                    "safety_violation_details": worker_task_violation_details,
+                }
+            )
             write_worker_message(config, reason + "\nWorker was not executed.\n")
             write_CODEX_RUN_STATUS(config, round_status)
-            publish_bridge_need_human(config, reason, worker_task_violations, round_index=round_index)
+            publish_bridge_need_human(config, reason, worker_task_violation_details, round_index=round_index)
             publish_bridge_worker_status(config, round_status, round_index=round_index)
             summary["rounds"].append(round_status)
             summary["status"] = "stopped_need_human"
@@ -245,7 +264,7 @@ def main() -> None:
     write_JSON_status = bridge_dir(config) / "codex_outbox" / "CODEX_RUN_STATUS.json"
     write_json(write_JSON_status, summary)
     publish_bridge_round_summary(config, summary, round_index=None)
-    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    emit_json(summary)
 
 
 def should_stop_on_error(config: dict[str, Any], consecutive_failures: int) -> bool:
