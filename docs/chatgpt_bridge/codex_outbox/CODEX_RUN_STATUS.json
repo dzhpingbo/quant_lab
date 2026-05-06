@@ -1,9 +1,0 @@
-{
-  "mode": "dry_run",
-  "status": "bridge_init_failed",
-  "bridge_mode": "github_issue",
-  "project_root": "E:\\dzhwork\\quant\\quant_lab",
-  "error": "GitHub CLI not found: gh is not installed or not on PATH.\n\nGitHub bridge setup required:\n1. Install GitHub CLI: https://cli.github.com/\n2. Run: gh auth login\n3. Ensure the current project_root is a git repository.\n4. Ensure git remote origin points to the intended GitHub repository.\n\nproject_root: E:\\dzhwork\\quant\\quant_lab",
-  "openai_api_key_required": false,
-  "openai_api_key_present_but_unused": true
-}
