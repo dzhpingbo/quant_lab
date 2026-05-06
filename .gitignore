@@ -33,3 +33,11 @@ mlruns/
 !NEXT_STEPS.md
 !AGENTS.md
 !docs/US_STOCK_SELECTION_AUTORUN.md
+
+# ChatGPT bridge runtime state
+docs/chatgpt_bridge/codex_inbox/
+docs/chatgpt_bridge/codex_outbox/
+docs/chatgpt_bridge/reviewer_inbox/
+docs/chatgpt_bridge/reviewer_outbox/
+docs/chatgpt_bridge/github_state/
+docs/chatgpt_bridge/rounds/
