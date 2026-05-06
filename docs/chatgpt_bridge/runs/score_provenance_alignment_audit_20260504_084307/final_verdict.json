@@ -1,0 +1,23 @@
+{
+  "classification": "score_provenance_mismatch",
+  "score_provenance_consistent": false,
+  "method_window_consistent": false,
+  "return_reconstruction_consistent": false,
+  "baseline_exception_pollution_found": true,
+  "evaluation_window_mismatch_found": true,
+  "method_mismatch_found": true,
+  "avg_top5_overlap_ratio": 0.2296296296296296,
+  "avg_score_rank_correlation": 0.2571392989022139,
+  "v9_original_results_should_be_discarded": true,
+  "unified_replay_usable": false,
+  "allow_continue_v9": false,
+  "allow_enter_v10": false,
+  "allow_expand_nasdaq100": false,
+  "allow_expand_sp500": false,
+  "allow_trade_execution": false,
+  "requires_human_review": true,
+  "next_allowed_action": "Stop and review score provenance evidence; if continuing, rerun same Pool A strategy with v8.2 score source and explicit aligned window.",
+  "reason": "v8.2 frozen scores come from v8.1 Alpha360 runtime score trail, while v9 local replay refits a local Alpha360-compatible score chain; score/rank overlap is insufficient and baseline-only PLTR/SNOW pollution remains.",
+  "zip_path": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\us_stock_selection_score_provenance_alignment_audit_20260504_084307.zip",
+  "run_dir": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\score_provenance_alignment_audit_20260504_084307"
+}

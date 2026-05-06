@@ -1,0 +1,18 @@
+{
+  "classification": "v9_1_ready_for_formal_v9_rerun",
+  "run_dir": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\v9_1_growth_data_onboarding_20260504_230014",
+  "provider_success": true,
+  "feature_cache_success": true,
+  "score_provenance_success": true,
+  "incremental_data_ready_count": 28,
+  "incremental_eligible_growth_count": 28,
+  "growth_topk_candidate_count": 23,
+  "pool_a_reproduction_aligned": true,
+  "allow_formal_v9_rerun": true,
+  "allow_enter_v10": false,
+  "allow_trade_execution": false,
+  "requires_human_review": false,
+  "next_allowed_action": "Run formal v9 rerun with v9.1 provider only after human review.",
+  "reason": "Provider, Alpha360 cache, LGBModel scores, and Pool A reproduction passed; 28 incremental growth tickers are eligible and 23 entered TopK candidates.",
+  "zip_path": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\us_stock_selection_v9_1_growth_data_onboarding_20260504_230014.zip"
+}

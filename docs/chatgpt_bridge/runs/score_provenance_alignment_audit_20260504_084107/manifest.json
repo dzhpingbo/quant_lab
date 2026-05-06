@@ -1,0 +1,68 @@
+{
+  "run_id": "score_provenance_alignment_audit_20260504_084107",
+  "run_dir": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\score_provenance_alignment_audit_20260504_084107",
+  "zip_path": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\us_stock_selection_score_provenance_alignment_audit_20260504_084107.zip",
+  "run_summary": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\RUN_SUMMARY.md",
+  "selected_report": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\selected_report.md",
+  "final_verdict": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\final_verdict.json",
+  "next_steps": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\next_steps.md",
+  "max_csv_mb": 5.0,
+  "include_xlsx": false,
+  "exported": {
+    "small_tables": {
+      "benchmark": {
+        "source": "",
+        "target": "docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\small_tables\\benchmark.csv",
+        "mode": "not_found"
+      },
+      "attribution": {
+        "source": "",
+        "target": "docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\small_tables\\attribution.csv",
+        "mode": "not_found"
+      },
+      "stress_test": {
+        "source": "",
+        "target": "docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\small_tables\\stress_test.csv",
+        "mode": "not_found"
+      },
+      "yearly_return": {
+        "source": "",
+        "target": "docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\small_tables\\yearly_return.csv",
+        "mode": "not_found"
+      },
+      "holdings_summary": {
+        "source": "",
+        "target": "docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\small_tables\\holdings_summary.csv",
+        "mode": "not_found"
+      }
+    },
+    "skipped": [],
+    "xlsx": [
+      "outputs\\us_stock_selection\\score_provenance_alignment_audit_20260504_084107\\reports\\score_provenance_alignment_audit_summary.xlsx (not copied; include_xlsx=false)"
+    ],
+    "key_metrics": "docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\key_metrics.csv"
+  },
+  "key_metrics_rows": 8,
+  "csv_inventory_rows": 13,
+  "bridge_run_dir": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107",
+  "bridge_run_dir_repo_relative": "docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107",
+  "review_packet": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\REVIEW_PACKET.md",
+  "review_packet_repo_relative": "docs\\chatgpt_bridge\\runs\\score_provenance_alignment_audit_20260504_084107\\REVIEW_PACKET.md",
+  "latest_md": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\LATEST.md",
+  "latest_md_repo_relative": "docs\\chatgpt_bridge\\LATEST.md",
+  "manifest_path": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\latest_run_manifest.json",
+  "manifest_path_repo_relative": "docs\\chatgpt_bridge\\latest_run_manifest.json",
+  "updated_at": "2026-05-04T08:41:18",
+  "git": {
+    "git_push_requested": false,
+    "is_git_repo": true,
+    "has_remote": true,
+    "commit_attempted": false,
+    "commit_success": false,
+    "push_attempted": false,
+    "push_success": false,
+    "message": "Git push not requested.",
+    "stdout": "",
+    "stderr": ""
+  }
+}

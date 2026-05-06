@@ -1,0 +1,93 @@
+{
+  "run_id": "formal_v9_20260505_224016",
+  "run_dir": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\formal_v9_20260505_224016",
+  "zip_path": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\us_stock_selection_formal_v9_20260505_224016.zip",
+  "run_summary": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\RUN_SUMMARY.md",
+  "selected_report": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\selected_report.md",
+  "final_verdict": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\final_verdict.json",
+  "next_steps": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\next_steps.md",
+  "max_csv_mb": 5.0,
+  "include_xlsx": false,
+  "exported": {
+    "small_tables": {
+      "benchmark": {
+        "source": "outputs\\us_stock_selection\\formal_v9_20260505_224016\\formal_v9\\formal_v9_benchmark_comparison.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\small_tables\\benchmark.csv",
+        "mode": "copied"
+      },
+      "attribution": {
+        "source": "outputs\\us_stock_selection\\formal_v9_20260505_224016\\formal_v9\\formal_v9_ticker_contribution.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\small_tables\\attribution.csv",
+        "mode": "copied"
+      },
+      "stress_test": {
+        "source": "outputs\\us_stock_selection\\formal_v9_20260505_224016\\formal_v9\\formal_v9_cost_sensitivity.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\small_tables\\stress_test.csv",
+        "mode": "copied"
+      },
+      "yearly_return": {
+        "source": "outputs\\us_stock_selection\\formal_v9_20260505_224016\\formal_v9\\formal_v9_yearly_return.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\small_tables\\yearly_return.csv",
+        "mode": "copied"
+      },
+      "holdings_summary": {
+        "source": "outputs\\us_stock_selection\\formal_v9_20260505_224016\\formal_v9\\formal_v9_monthly_holdings.csv",
+        "target": "docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\small_tables\\holdings_summary.csv",
+        "mode": "summarized_holdings"
+      }
+    },
+    "skipped": [],
+    "xlsx": [
+      "outputs\\us_stock_selection\\formal_v9_20260505_224016\\reports\\formal_v9_summary.xlsx (not copied; include_xlsx=false)"
+    ],
+    "key_metrics": "docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\key_metrics.csv"
+  },
+  "key_metrics_rows": 4,
+  "csv_inventory_rows": 33,
+  "bridge_run_dir": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016",
+  "bridge_run_dir_repo_relative": "docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016",
+  "review_packet": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\REVIEW_PACKET.md",
+  "review_packet_repo_relative": "docs\\chatgpt_bridge\\runs\\formal_v9_20260505_224016\\REVIEW_PACKET.md",
+  "latest_md": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\LATEST.md",
+  "latest_md_repo_relative": "docs\\chatgpt_bridge\\LATEST.md",
+  "manifest_path": "E:\\dzhwork\\quant\\quant_lab\\docs\\chatgpt_bridge\\latest_run_manifest.json",
+  "manifest_path_repo_relative": "docs\\chatgpt_bridge\\latest_run_manifest.json",
+  "updated_at": "2026-05-05T23:21:51",
+  "git": {
+    "git_push_requested": false,
+    "is_git_repo": true,
+    "has_remote": true,
+    "commit_attempted": false,
+    "commit_success": false,
+    "push_attempted": false,
+    "push_success": false,
+    "message": "Git push not requested.",
+    "stdout": "",
+    "stderr": ""
+  },
+  "latest_status": "formal_v9_failed_with_failure_attribution_audit_completed",
+  "failure_audit": {
+    "audit_dir": "outputs/us_stock_selection/formal_v9_20260505_224016/audit",
+    "audit_report": "outputs/us_stock_selection/formal_v9_20260505_224016/audit/formal_v9_failure_audit.md",
+    "comparison_xlsx": "outputs/us_stock_selection/formal_v9_20260505_224016/audit/formal_v9_vs_v82_frozen_comparison.xlsx",
+    "failure_attribution_csv": "outputs/us_stock_selection/formal_v9_20260505_224016/audit/formal_v9_failure_attribution.csv",
+    "concentration_breakdown_csv": "outputs/us_stock_selection/formal_v9_20260505_224016/audit/formal_v9_concentration_breakdown.csv",
+    "year_contribution_csv": "outputs/us_stock_selection/formal_v9_20260505_224016/audit/formal_v9_year_contribution.csv",
+    "ticker_contribution_csv": "outputs/us_stock_selection/formal_v9_20260505_224016/audit/formal_v9_ticker_contribution.csv",
+    "cost_sensitivity_csv": "outputs/us_stock_selection/formal_v9_20260505_224016/audit/formal_v9_cost_sensitivity.csv",
+    "readme": "outputs/us_stock_selection/formal_v9_20260505_224016/audit/formal_v9_audit_README.md",
+    "engineering_or_data_abnormality_confirmed": false,
+    "strategy_validity_failure_confirmed": true,
+    "allowed_next_action": "v9 same-pool audit/repair only",
+    "forbidden_next_actions": [
+      "v10",
+      "Nasdaq100/S&P500/full-market expansion",
+      "new strategy direction",
+      "parameter search",
+      "trading/broker/API connection",
+      "automatic commit/push",
+      "gate lowering",
+      "using old v9 or unified replay as formal result"
+    ]
+  }
+}

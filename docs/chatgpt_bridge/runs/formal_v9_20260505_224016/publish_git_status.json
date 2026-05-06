@@ -1,0 +1,12 @@
+{
+  "git_push_requested": false,
+  "is_git_repo": true,
+  "has_remote": true,
+  "commit_attempted": false,
+  "commit_success": false,
+  "push_attempted": false,
+  "push_success": false,
+  "message": "Git push not requested.",
+  "stdout": "",
+  "stderr": ""
+}

@@ -1,0 +1,13 @@
+﻿year,year_return,universe_name
+2024,0.8106926152371345,formal_pool_a_reproduction
+2025,0.782045301599916,formal_pool_a_reproduction
+2026,-0.0389642328748565,formal_pool_a_reproduction
+2024,0.8106926152371345,formal_pool_a_plus_small_growth
+2025,0.782045301599916,formal_pool_a_plus_small_growth
+2026,-0.0389642328748565,formal_pool_a_plus_small_growth
+2024,0.0,formal_small_growth_only
+2025,0.0,formal_small_growth_only
+2026,0.0,formal_small_growth_only
+2024,0.6105554432092453,formal_pool_a_plus_small_growth_ex_high_vol
+2025,1.0565884555814091,formal_pool_a_plus_small_growth_ex_high_vol
+2026,-0.0447792017435462,formal_pool_a_plus_small_growth_ex_high_vol
