@@ -72,40 +72,6 @@
   "score_provenance_gap": false,
   "current_frozen_mainline": "v8.2 frozen Pool A top5_ytdcap80p_derisk100p",
   "frozen_mainline_changed": false,
-  "formal_v9_failed_branch": {
-    "run_id": "formal_v9_20260505_224016",
-    "status_text": "formal_v9_20260505_224016 did not pass the formal gate",
-    "formal_gate_pass": false,
-    "allowed_as_frozen_baseline": false,
-    "allowed_as_frozen_baseline_text": "formal v9 is not allowed as the frozen baseline",
-    "failure_reasons": [
-      "v9.1 score/rank drift",
-      "small-growth dilution",
-      "cost fragility",
-      "elevated single-year contribution",
-      "PLTR/MSTR/COIN dependency"
-    ],
-    "old_v9_or_unified_replay_allowed_as_formal_result": false
-  },
-  "baseline_caveat": {
-    "score_provenance": "v8.1 frozen runtime prediction trail",
-    "score_source_text": "not a newly trained v9.1 score source",
-    "not_newly_trained_v9_1_score_source": true,
-    "pass_scope": "formal replay / formal evidence audit PASS only",
-    "retrain_reproduction_text": "does not mean v9.1 retrain can reproduce v8.2 score/rank",
-    "v9_1_retrain_reproduces_v82_score_rank": false
-  },
-  "next_allowed_action": "Stop for human review; v8.2 can be treated as the formal frozen baseline evidence packet. Do not enter v10.",
-  "forbidden_next_actions": [
-    "v10",
-    "Nasdaq100/S&P500/full-market expansion",
-    "new strategy search",
-    "parameter search",
-    "trading/broker/API/real order workflow",
-    "gate lowering",
-    "using old v9 or unified replay as formal result",
-    "automatic commit/push"
-  ],
   "commit_push": "No",
   "audit": {
     "audit_dir": "E:\\dzhwork\\quant\\quant_lab\\outputs\\us_stock_selection\\v82_frozen_formal_audit_20260506_113454",

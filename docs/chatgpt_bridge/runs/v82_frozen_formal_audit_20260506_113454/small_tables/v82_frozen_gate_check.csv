@@ -1,0 +1,15 @@
+﻿gate,value,threshold,operator,pass
+cagr_20,0.6421262430680639,0.2,>=,True
+calmar_1,1.6339698829869318,1.0,>=,True
+cost50_t1_cagr_20,0.5406128633202154,0.2,>=,True
+cost50_t1_calmar_1,1.3453478263901464,1.0,>=,True
+single_year_share_50,0.4968386021801039,0.5,<=,True
+top_ticker_share_30,0.137939380670818,0.3,<=,True
+remove_top_year_cagr_20,0.5215872877272436,0.2,>=,True
+remove_top_year_calmar_1,1.3272435579382131,1.0,>=,True
+remove_top_ticker_cagr_20,0.4896538831502253,0.2,>=,True
+remove_top_ticker_calmar_1,1.3265102205318462,1.0,>=,True
+no_leakage,True,True,is,True
+no_score_provenance_mismatch,True,True,is,True
+no_baseline_exception_pollution,True,True,is,True
+coin_mstr_pltr_dependency_audit,0.1750111368026543,0.4,<= and top_ticker_not_in_set,True

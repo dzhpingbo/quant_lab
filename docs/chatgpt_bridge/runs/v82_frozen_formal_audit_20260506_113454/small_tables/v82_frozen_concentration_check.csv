@@ -1,0 +1,7 @@
+﻿check,value,threshold,pass,details
+single_year_share,0.4968386021801039,0.5,True,top year=2024
+top_ticker_share,0.137939380670818,0.3,True,top ticker=INTC
+remove_top_year_cagr,0.5215872877272436,0.2,True,removed year=2024
+remove_top_ticker_cagr,0.4896538831502253,0.2,True,removed ticker=INTC
+coin_mstr_pltr_abs_share,0.1750111368026543,0.4,True,combined contribution share for COIN/MSTR/PLTR
+top5_selection_frequency,0.6180257510729614,0.7,True,most frequently selected ticker=NVDA

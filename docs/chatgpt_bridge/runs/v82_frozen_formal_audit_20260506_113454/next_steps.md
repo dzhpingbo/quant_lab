@@ -10,20 +10,6 @@
 - Gate result: `PASS`.
 - Current frozen mainline remains v8.2 `top5_ytdcap80p_derisk100p`.
 
-## Formal v9 Failed Branch
-
-- `formal_v9_20260505_224016` did not pass the formal gate.
-- Failure reasons include v9.1 score/rank drift, small-growth dilution, cost fragility, elevated single-year contribution, and PLTR/MSTR/COIN dependency.
-- formal v9 is not allowed as the frozen baseline.
-- Do not use old v9 or unified replay as a formal result.
-
-## Baseline Caveat
-
-- v8.2 score provenance is a v8.1 frozen runtime prediction trail.
-- It is not a newly trained v9.1 score source.
-- The current PASS is a formal replay / formal evidence audit PASS only.
-- It does not mean v9.1 retrain can reproduce v8.2 score/rank.
-
 ## Only Allowed Next Action
 
 Stop for human review; v8.2 can be treated as the formal frozen baseline evidence packet. Do not enter v10.

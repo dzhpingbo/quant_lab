@@ -11,10 +11,6 @@
 - Core metrics CAGR/Calmar/MaxDD: `0.6421262430680639` / `1.6339698829869318` / `-0.39298536022845376`.
 - cost50 CAGR/Calmar: `0.5406128633202154` / `1.3453478263901464`.
 - Frozen mainline changed: `False`; current frozen mainline remains v8.2 `top5_ytdcap80p_derisk100p`.
-- Formal v9 failed branch: `formal_v9_20260505_224016` did not pass the formal gate.
-- Formal v9 failure reasons: v9.1 score/rank drift, small-growth dilution, cost fragility, elevated single-year contribution, and PLTR/MSTR/COIN dependency.
-- Formal v9 is not allowed as the frozen baseline; old v9 and unified replay must not be used as formal results.
-- Caveat: v8.2 score provenance is a v8.1 frozen runtime prediction trail, not a newly trained v9.1 score source; this is a formal replay / formal evidence audit PASS only and does not mean v9.1 retrain can reproduce v8.2 score/rank.
 - Current allowed next action: Stop for human review; v8.2 can be treated as the formal frozen baseline evidence packet. Do not enter v10.
 
 This audit does not authorize v10, Nasdaq100/S&P500 expansion, full-market expansion, trading, broker/API workflows, parameter search, gate lowering, or automatic commit/push.
