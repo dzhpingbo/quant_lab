@@ -1,0 +1,14 @@
+section,item,values,execute_in_dry_run
+strategy_family,trend_following,sma;ema;breakout,False
+strategy_family,time_series_momentum,21d;63d;126d;252d,False
+strategy_family,volatility_filter,20d;63d;252d,False
+strategy_family,drawdown_guardrail,10pct;15pct;20pct;25pct,False
+signal_candidate,adj_close_momentum,adj_close only,False
+signal_candidate,liquidity_flag,volume risk flag only,False
+ranking_rule,robustness_first,return;drawdown;turnover;cost stress,False
+rebalance,frequency,monthly;quarterly,False
+holding,max_position_weight,0.10;0.15;0.20,False
+cost,cost_bps_grid,0;5;10;20;50,False
+slippage,slippage_bps_grid,0;5;10;20,False
+validation,walk_forward,predeclared splits;final holdout,False
+bias_control,multiple_testing,record every candidate and parameter count,False

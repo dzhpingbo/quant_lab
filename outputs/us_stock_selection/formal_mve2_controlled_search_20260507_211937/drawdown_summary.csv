@@ -1,0 +1,2 @@
+candidate_id,max_drawdown,drawdown_duration,start_date,end_date,status,reason
+NA,NA,NA,NA,NA,NOT_EXECUTED_OR_NOT_AVAILABLE,P5 full_search implementation is incomplete; no formal candidate result was computed.

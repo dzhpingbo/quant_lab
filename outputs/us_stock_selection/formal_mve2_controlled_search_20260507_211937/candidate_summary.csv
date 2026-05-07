@@ -1,0 +1,2 @@
+candidate_id,ticker,strategy_family,parameter_set_id,decision,CAGR,MDD,Calmar,Sharpe,turnover,risk_flag_summary,status,reason
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NOT_EXECUTED_OR_NOT_AVAILABLE,P5 full_search implementation is incomplete; no formal candidate result was computed.

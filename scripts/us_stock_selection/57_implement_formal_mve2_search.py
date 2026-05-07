@@ -27,6 +27,7 @@ FORMAL_V9_FAILURE_AUDIT = OUTPUT_ROOT / "formal_v9_20260505_224016" / "audit" / 
 SCRIPT_PATH = Path("scripts/us_stock_selection/57_implement_formal_mve2_search.py")
 
 RUN_PREFIX = "formal_mve2_search_implementation_p4_dryrun"
+P5_RUN_PREFIX = "formal_mve2_controlled_search"
 REQUIRED_CORE_FIELDS = ["date", "ticker", "adj_close", "volume"]
 VOLUME_WARNING_TICKERS = ["AAPL", "AMD", "ARKK", "IGV", "INTC", "SHOP"]
 PRICE_JUMP_WARNING_TICKERS = ["AAPL", "AMD", "MSTR", "ROKU", "SHOP", "SOXL", "UPST"]
@@ -523,6 +524,359 @@ def create_zip(out_dir: Path) -> Path:
     return zip_path
 
 
+def p5_placeholder_frame(kind: str) -> pd.DataFrame:
+    base = {
+        "status": "NOT_EXECUTED_OR_NOT_AVAILABLE",
+        "reason": "P5 full_search implementation is incomplete; no formal candidate result was computed.",
+    }
+    schemas: dict[str, list[str]] = {
+        "candidate_summary": [
+            "candidate_id",
+            "ticker",
+            "strategy_family",
+            "parameter_set_id",
+            "decision",
+            "CAGR",
+            "MDD",
+            "Calmar",
+            "Sharpe",
+            "turnover",
+            "risk_flag_summary",
+            "status",
+            "reason",
+        ],
+        "selected_candidates": [
+            "candidate_id",
+            "ticker",
+            "strategy_family",
+            "selection_reason",
+            "status",
+            "reason",
+        ],
+        "rejected_candidates": [
+            "candidate_id",
+            "ticker",
+            "strategy_family",
+            "rejection_reason",
+            "status",
+            "reason",
+        ],
+        "benchmark_comparison": [
+            "benchmark",
+            "role",
+            "CAGR",
+            "MDD",
+            "Calmar",
+            "excess_CAGR",
+            "status",
+            "reason",
+        ],
+        "yearly_performance": ["year", "candidate_id", "return", "benchmark_return", "status", "reason"],
+        "subperiod_performance": ["subperiod", "candidate_id", "return", "MDD", "Calmar", "status", "reason"],
+        "drawdown_summary": ["candidate_id", "max_drawdown", "drawdown_duration", "start_date", "end_date", "status", "reason"],
+        "turnover_summary": ["candidate_id", "annual_turnover", "trade_count", "status", "reason"],
+        "cost_stress_summary": ["candidate_id", "cost_bps", "CAGR", "Calmar", "status", "reason"],
+    }
+    columns = schemas[kind]
+    row = {column: "NA" for column in columns}
+    for key, value in base.items():
+        if key in row:
+            row[key] = value
+    return pd.DataFrame([row], columns=columns)
+
+
+def p5_search_execution_summary(input_checks: pd.DataFrame, p2c_decision: str) -> pd.DataFrame:
+    missing_count = int((input_checks["status"] != "PASS").sum()) if not input_checks.empty else 1
+    return pd.DataFrame(
+        [
+            {"item": "mode_requested", "value": "full_search", "status": "REQUESTED"},
+            {"item": "confirmation_received", "value": "true", "status": "PASS"},
+            {"item": "p2c_readiness_decision", "value": p2c_decision, "status": "PASS" if p2c_decision == "PASS_TO_P3_FORMAL_MVE2_DESIGN" else "FAIL"},
+            {"item": "required_inputs_missing", "value": missing_count, "status": "PASS" if missing_count == 0 else "FAIL"},
+            {"item": "controlled_search_success", "value": "false", "status": "FAIL"},
+            {"item": "full_search_executed", "value": "false", "status": "NOT_EXECUTED"},
+            {"item": "implementation_status", "value": "incomplete", "status": "P5_FAILED_IMPLEMENTATION_INCOMPLETE"},
+            {"item": "formal_candidate_ranking_generated", "value": "false", "status": "PASS"},
+            {"item": "selected_formal_candidate_generated", "value": "false", "status": "PASS"},
+            {"item": "baseline_replaced", "value": "false", "status": "PASS"},
+            {"item": "v10_executed", "value": "false", "status": "PASS"},
+        ]
+    )
+
+
+def p5_risk_flag_exposure(accepted_flags: pd.DataFrame) -> pd.DataFrame:
+    rows: list[dict[str, Any]] = []
+    for _, row in accepted_flags.iterrows():
+        rows.append(
+            {
+                "ticker": clean(row.get("ticker")),
+                "flag_type": clean(row.get("flag_type")),
+                "source_status": clean(row.get("source_status")),
+                "exposure_in_p5_results": "NOT_EXECUTED_OR_NOT_AVAILABLE",
+                "must_carry_to_future_search": True,
+                "evidence_file": clean(row.get("evidence_file")),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def p5_decision_json(run_id: str, p2c_decision: str, input_checks: pd.DataFrame) -> dict[str, Any]:
+    missing_count = int((input_checks["status"] != "PASS").sum()) if not input_checks.empty else 1
+    return {
+        "run_id": run_id,
+        "decision": "P5_FAILED_IMPLEMENTATION_INCOMPLETE",
+        "controlled_search_success": False,
+        "full_search_requested": True,
+        "full_search_executed": False,
+        "implementation_incomplete": True,
+        "candidate_summary_generated": True,
+        "candidate_summary_contains_real_results": False,
+        "selected_candidates_generated": True,
+        "selected_formal_candidate_generated": False,
+        "rejected_candidates_generated": True,
+        "benchmark_comparison_generated": True,
+        "benchmark_comparison_contains_real_results": False,
+        "risk_flag_exposure_generated": True,
+        "baseline_replaced": False,
+        "no_baseline_replacement": True,
+        "v10_executed": False,
+        "no_v10": True,
+        "requires_p6_validation_audit_pack": False,
+        "next_allowed_action": "IMPLEMENT_FULL_SEARCH_LOGIC_OR_REVIEW_P5_FAILURE_BEFORE_P6",
+        "p2c_readiness_decision": p2c_decision,
+        "required_inputs_missing_count": missing_count,
+        "group4_hold_not_touched": True,
+        "raw_data_modified": False,
+        "audit_csv_modified": False,
+    }
+
+
+def p5_guardrails() -> dict[str, Any]:
+    return {
+        "full_search_requested_with_confirmation": True,
+        "controlled_search_success": False,
+        "full_search_executed": False,
+        "implementation_incomplete": True,
+        "no_candidate_selected": True,
+        "no_formal_candidate_ranking": True,
+        "no_baseline_replacement": True,
+        "no_v10": True,
+        "no_training": True,
+        "no_original_data_modified": True,
+        "audit_csv_not_modified": True,
+        "group4_not_touched": True,
+        "formal_v9_not_used_as_baseline": True,
+        "limited_mve2_not_used_as_formal_baseline": True,
+        "old_qlib_not_used": True,
+        "old_v8_cache_not_used": True,
+    }
+
+
+def write_p5_report(out_dir: Path, run_id: str, p2c_decision: str, universe: dict[str, int]) -> None:
+    text = f"""# Formal MVE2 Controlled Search P5 Report
+
+## Summary
+
+- Run id: `{run_id}`
+- Requested mode: `full_search`
+- Confirmation flag provided: `true`
+- P2-C readiness decision: `{p2c_decision}`
+- Controlled search success: `false`
+- Decision: `P5_FAILED_IMPLEMENTATION_INCOMPLETE`
+- Full formal search executed: `false`
+- Candidate ranking generated: `false`
+- Selected formal candidate generated: `false`
+- Baseline replaced: `false`
+- v10 executed: `false`
+
+## Result
+
+The P4 script still does not contain reviewed full-search implementation logic. Per P5 safety rules, this run produced a controlled failure package instead of fabricating formal candidate results.
+
+All result tables that would require actual full-search execution are schema or placeholder files marked `NOT_EXECUTED_OR_NOT_AVAILABLE`.
+
+## Data Source And Universe
+
+- Allowed data source: `data/unified_ohlcv/us_stock_selection`
+- Core fields: `date`, `ticker`, `adj_close`, `volume`
+- Search universe: `{universe['search_universe_count']}`
+- Eligible universe: `{universe['eligible_ticker_count']}`
+- Excluded universe: `{universe['excluded_ticker_count']}`
+- Future formal candidate pool: eligible tickers only
+
+## Benchmark And Risk Rules
+
+- v8.2 frozen is comparison baseline metadata only.
+- formal v9 is a failed branch and is not a benchmark or baseline.
+- limited MVE2 is independent research context and is not a formal baseline.
+- Residual volume and price-jump tickers remain risk flags.
+
+## Next Step
+
+Do not proceed to P6 validation / audit pack from this failed P5 package. The next safe action is to implement reviewed full-search logic or explicitly review this P5 failure.
+"""
+    (out_dir / "formal_mve2_controlled_search_report.md").write_text(text, encoding="utf-8")
+
+
+def write_p5_readme(out_dir: Path, run_id: str) -> None:
+    text = f"""# Formal MVE2 Controlled Search P5
+
+Run id: `{run_id}`
+
+This package is a controlled P5 failure package. The requested full search was not executed because the P4 script does not yet implement reviewed full-search logic.
+
+Decision: `P5_FAILED_IMPLEMENTATION_INCOMPLETE`
+
+No formal candidate ranking, selected formal candidate, baseline replacement, model training, or v10 output is included. Placeholder result files are marked `NOT_EXECUTED_OR_NOT_AVAILABLE`.
+"""
+    (out_dir / "README.md").write_text(text, encoding="utf-8")
+
+
+def write_p5_manifest(
+    out_dir: Path,
+    run_id: str,
+    generated_at: str,
+    generated_files: list[Path],
+    zip_path: Path,
+) -> None:
+    manifest = {
+        "run_id": run_id,
+        "run_type": "formal_mve2_controlled_search",
+        "mode": "full_search",
+        "generated_at": generated_at,
+        "git_commit": git_head(),
+        "script_path": SCRIPT_PATH.as_posix(),
+        "input_paths": [
+            rel(P2C_DIR),
+            rel(VALIDATION_DIR),
+            rel(SEARCH_DIR),
+            rel(STORE_DIR),
+            rel(V82_AUDIT_DIR),
+            rel(FORMAL_V9_FAILURE_AUDIT),
+        ],
+        "output_dir": rel(out_dir),
+        "generated_files": [rel(path) for path in generated_files] + [rel(zip_path)],
+        "decision": "P5_FAILED_IMPLEMENTATION_INCOMPLETE",
+        "controlled_search_success": False,
+        "full_search_requested": True,
+        "full_search_executed": False,
+        "formal_mve2_search_executed": False,
+        "model_training_executed": False,
+        "formal_candidate_ranking_generated": False,
+        "selected_formal_candidate_generated": False,
+        "baseline_replaced": False,
+        "no_baseline_replacement": True,
+        "direct_v10_allowed": False,
+        "no_v10": True,
+        "requires_p6_validation_audit_pack": False,
+        "group4_hold_not_touched": True,
+        "raw_data_modified": False,
+        "audit_csv_modified": False,
+        "explicit_exclusions": [
+            "old qlib",
+            "old v8 cache",
+            "formal v9 as benchmark or baseline",
+            "v8.2 formal baseline outputs as data source",
+            "limited MVE2 as formal baseline",
+            "group4 artifacts",
+        ],
+    }
+    write_json(out_dir / "manifest.json", manifest)
+
+
+def write_p5_controlled_failure_outputs(out_dir: Path) -> tuple[bool, list[Path], Path]:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "small_tables").mkdir(exist_ok=True)
+
+    run_id = out_dir.name
+    generated_at = datetime.now().isoformat(timespec="seconds")
+    p2c_decision_json = read_json(P2C_DIR / "final_readiness_decision.json")
+    p2c_decision = str(p2c_decision_json.get("final_readiness_decision", "MISSING"))
+    input_checks = check_inputs()
+    universe_summary = read_csv(P2C_DIR / "universe_readiness_summary.csv")
+    accepted_flags = read_csv(P2C_DIR / "accepted_quality_flags.csv")
+    eligible = read_csv(SEARCH_DIR / "eligible_universe_limited_mve2.csv")
+    excluded = read_csv(SEARCH_DIR / "excluded_tickers_limited_mve2.csv")
+    universe = universe_counts(universe_summary)
+
+    generated_files: list[Path] = []
+    tables = {
+        "candidate_summary.csv": p5_placeholder_frame("candidate_summary"),
+        "selected_candidates.csv": p5_placeholder_frame("selected_candidates"),
+        "rejected_candidates.csv": p5_placeholder_frame("rejected_candidates"),
+        "benchmark_comparison.csv": p5_placeholder_frame("benchmark_comparison"),
+        "yearly_performance.csv": p5_placeholder_frame("yearly_performance"),
+        "subperiod_performance.csv": p5_placeholder_frame("subperiod_performance"),
+        "drawdown_summary.csv": p5_placeholder_frame("drawdown_summary"),
+        "turnover_summary.csv": p5_placeholder_frame("turnover_summary"),
+        "cost_stress_summary.csv": p5_placeholder_frame("cost_stress_summary"),
+        "risk_flag_exposure.csv": p5_risk_flag_exposure(accepted_flags),
+        "parameter_grid_summary.csv": search_space_summary(),
+        "search_execution_summary.csv": p5_search_execution_summary(input_checks, p2c_decision),
+        "reproducibility_checklist.csv": reproducibility_checklist(run_id, out_dir),
+        "risk_flags.csv": risk_flags_for_run(False, input_checks),
+        "universe_policy.csv": universe_policy(eligible, excluded),
+        "benchmark_policy.csv": benchmark_policy(),
+    }
+    for name, df in tables.items():
+        path = out_dir / name
+        df.to_csv(path, index=False)
+        generated_files.append(path)
+
+    small_tables = {
+        "placeholder_result_schema.csv": output_package_schema(),
+        "p5_failure_summary.csv": pd.DataFrame(
+            [
+                {"item": "decision", "value": "P5_FAILED_IMPLEMENTATION_INCOMPLETE"},
+                {"item": "controlled_search_success", "value": "false"},
+                {"item": "full_search_executed", "value": "false"},
+                {"item": "candidate_ranking_generated", "value": "false"},
+                {"item": "selected_formal_candidate_generated", "value": "false"},
+            ]
+        ),
+        "risk_flag_tickers.csv": p5_risk_flag_exposure(accepted_flags),
+    }
+    for name, df in small_tables.items():
+        path = out_dir / "small_tables" / name
+        df.to_csv(path, index=False)
+        generated_files.append(path)
+
+    run_config = build_run_config(run_id, out_dir, universe, "full_search", generated_at)
+    run_config["execution_policy"].update(
+        {
+            "full_search_requested": True,
+            "full_search_not_executed": True,
+            "controlled_search_success": False,
+            "implementation_incomplete": True,
+            "p5_decision": "P5_FAILED_IMPLEMENTATION_INCOMPLETE",
+        }
+    )
+    run_config_path = out_dir / "run_config.json"
+    write_json(run_config_path, run_config)
+    generated_files.append(run_config_path)
+
+    decision_path = out_dir / "formal_mve2_search_decision.json"
+    write_json(decision_path, p5_decision_json(run_id, p2c_decision, input_checks))
+    generated_files.append(decision_path)
+
+    guardrails_path = out_dir / "formal_search_guardrails.json"
+    write_json(guardrails_path, p5_guardrails())
+    generated_files.append(guardrails_path)
+
+    write_p5_report(out_dir, run_id, p2c_decision, universe)
+    generated_files.append(out_dir / "formal_mve2_controlled_search_report.md")
+    write_p5_readme(out_dir, run_id)
+    generated_files.append(out_dir / "README.md")
+
+    manifest_path = out_dir / "manifest.json"
+    generated_files.append(manifest_path)
+    zip_path = create_zip(out_dir)
+    write_p5_manifest(out_dir, run_id, generated_at, generated_files, zip_path)
+    zip_path = create_zip(out_dir)
+
+    return False, sorted(set(generated_files), key=lambda p: rel(p)), zip_path
+
+
 def write_manifest(
     out_dir: Path,
     run_id: str,
@@ -670,7 +1024,22 @@ def main() -> int:
     if args.mode == "full_search":
         if not args.confirm_formal_search:
             raise SystemExit("full_search requires --confirm-formal-search and is not part of P4 dry-run")
-        raise SystemExit("full_search is intentionally not implemented in P4")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        out_dir = OUTPUT_ROOT / f"{P5_RUN_PREFIX}_{timestamp}"
+        controlled_search_success, generated_files, zip_path = write_p5_controlled_failure_outputs(out_dir)
+        print(json.dumps(
+            {
+                "run_id": out_dir.name,
+                "output_dir": rel(out_dir),
+                "decision": "P5_FAILED_IMPLEMENTATION_INCOMPLETE",
+                "controlled_search_success": controlled_search_success,
+                "full_search_executed": False,
+                "generated_file_count": len(generated_files),
+                "zip_path": rel(zip_path),
+            },
+            indent=2,
+        ))
+        return 2
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     out_dir = OUTPUT_ROOT / f"{RUN_PREFIX}_{timestamp}"

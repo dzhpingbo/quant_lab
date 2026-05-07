@@ -1,0 +1,7 @@
+flag_id,severity,status,detail
+input_presence,critical,PASS,missing_or_failed_inputs=0
+dry_run_only,critical,PASS,P4 executed dry-run scaffold only.
+formal_search_not_executed,critical,PASS,No formal MVE2 search was run.
+no_candidate_ranking,critical,PASS,No formal candidate ranking was generated.
+no_selected_candidate,critical,PASS,No selected formal candidate was generated.
+dryrun_success,info,FAIL,dryrun_success=False

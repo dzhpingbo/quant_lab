@@ -1,0 +1,18 @@
+{
+  "full_search_requested_with_confirmation": true,
+  "controlled_search_success": false,
+  "full_search_executed": false,
+  "implementation_incomplete": true,
+  "no_candidate_selected": true,
+  "no_formal_candidate_ranking": true,
+  "no_baseline_replacement": true,
+  "no_v10": true,
+  "no_training": true,
+  "no_original_data_modified": true,
+  "audit_csv_not_modified": true,
+  "group4_not_touched": true,
+  "formal_v9_not_used_as_baseline": true,
+  "limited_mve2_not_used_as_formal_baseline": true,
+  "old_qlib_not_used": true,
+  "old_v8_cache_not_used": true
+}

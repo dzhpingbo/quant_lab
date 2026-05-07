@@ -1,0 +1,12 @@
+item,value,status
+mode_requested,full_search,REQUESTED
+confirmation_received,true,PASS
+p2c_readiness_decision,PASS_TO_P3_FORMAL_MVE2_DESIGN,PASS
+required_inputs_missing,0,PASS
+controlled_search_success,false,FAIL
+full_search_executed,false,NOT_EXECUTED
+implementation_status,incomplete,P5_FAILED_IMPLEMENTATION_INCOMPLETE
+formal_candidate_ranking_generated,false,PASS
+selected_formal_candidate_generated,false,PASS
+baseline_replaced,false,PASS
+v10_executed,false,PASS
