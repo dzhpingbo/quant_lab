@@ -1,0 +1,19 @@
+{
+  "run_id": "formal_mve2_validation_audit_p6_20260507_221007",
+  "p6_decision": "FAIL_VALIDATION_AUDIT",
+  "can_enter_p7_baseline_comparison": false,
+  "reasons": [
+    "3 selected candidates fail MDD/Calmar risk audit."
+  ],
+  "selected_candidate_count": 3,
+  "selected_fail_risk_count": 3,
+  "baseline_replaced": false,
+  "no_baseline_replacement": true,
+  "v10_executed": false,
+  "no_v10": true,
+  "new_search_executed": false,
+  "group4_hold_not_touched": true,
+  "raw_data_modified": false,
+  "audit_csv_modified": false,
+  "p5b_outputs_modified": false
+}

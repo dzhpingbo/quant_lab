@@ -1,0 +1,6 @@
+item,status,value
+p5b_package_read,PASS,outputs/us_stock_selection/formal_mve2_controlled_search_p5b_20260507_215801
+audited_store_read,PASS,data/unified_ohlcv/us_stock_selection
+new_search_executed,PASS,false
+p5b_outputs_modified,PASS,false
+group4_not_used,PASS,true

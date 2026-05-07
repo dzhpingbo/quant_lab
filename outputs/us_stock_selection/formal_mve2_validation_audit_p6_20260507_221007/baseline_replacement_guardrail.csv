@@ -1,0 +1,10 @@
+guardrail,pass,status
+no_baseline_replacement,True,PASS
+no_v10,True,PASS
+requires_p6_validation,True,PASS
+selected_for_validation_only,True,PASS
+formal_v9_not_baseline,True,PASS
+limited_mve2_not_formal_baseline,True,PASS
+group4_not_touched,True,PASS
+original_data_not_modified,True,PASS
+audit_csv_not_modified,True,PASS

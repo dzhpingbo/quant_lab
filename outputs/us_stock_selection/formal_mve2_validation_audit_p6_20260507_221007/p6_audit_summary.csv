@@ -1,0 +1,8 @@
+metric,value
+p5b_candidate_count,18
+p5b_selected_count,3
+p5b_rejected_count,15
+package_missing_count,0
+selected_fail_risk_count,3
+p6_decision,FAIL_VALIDATION_AUDIT
+can_enter_p7_baseline_comparison,False

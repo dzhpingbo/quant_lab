@@ -1,0 +1,7 @@
+item,status,value
+script_path_recorded,PASS,scripts/us_stock_selection/58_validate_formal_mve2_p5b_audit_pack.py
+git_commit_recorded,PASS,cb2a6c38ce8f6a8211b23b77a15f2fb642bdaff0
+output_dir_recorded,PASS,outputs/us_stock_selection/formal_mve2_validation_audit_p6_20260507_221007
+new_search_not_run,PASS,true
+baseline_not_replaced,PASS,true
+v10_not_created,PASS,true

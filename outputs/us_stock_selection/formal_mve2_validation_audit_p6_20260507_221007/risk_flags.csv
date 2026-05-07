@@ -1,0 +1,5 @@
+flag_id,severity,status,detail
+selected_mdd_fail_risk,critical,FAIL,MDD threshold audit for selected candidates
+selected_calmar_conditional,warning,WARN,Calmar threshold audit for selected candidates
+no_baseline_replacement,critical,PASS,P6 did not replace v8.2 baseline
+no_v10,critical,PASS,P6 did not create v10

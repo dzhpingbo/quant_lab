@@ -1,0 +1,4 @@
+candidate_id,MDD,Calmar,MDD_audit,Calmar_audit,recommend_enter_p7_baseline_comparison
+momentum_rank__p002,-0.964252563596958,0.6974799218982968,FAIL_RISK,CONDITIONAL,False
+momentum_rank__p004,-0.9561956563695192,0.6760345413161931,FAIL_RISK,CONDITIONAL,False
+momentum_liquidity_guard__p016,-0.9561956563695192,0.6709167099224483,FAIL_RISK,CONDITIONAL,False

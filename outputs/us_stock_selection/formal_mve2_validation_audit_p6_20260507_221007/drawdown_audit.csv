@@ -1,0 +1,19 @@
+candidate_id,max_drawdown,drawdown_duration,start_date,end_date,audit_note
+momentum_rank__p001,-0.9996769604664416,1114,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_rank__p002,-0.964252563596958,953,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_rank__p003,-0.9986461555622584,1114,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_rank__p004,-0.9561956563695192,762,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_rank__p005,-0.9960754217286896,1114,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_rank__p006,-0.953422836164888,744,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_low_vol__p007,-1.1834374224849793,1558,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_low_vol__p008,-0.9678290300408549,958,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_low_vol__p009,-0.9999544873292336,1558,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_low_vol__p010,-0.964941371431889,953,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_low_vol__p011,-0.9994990897656852,1114,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_low_vol__p012,-0.9678290300408549,958,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_low_vol__p013,-0.9991333228374072,1114,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_low_vol__p014,-0.9606757923918,762,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_liquidity_guard__p015,-0.9986461555622584,1114,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_liquidity_guard__p016,-0.9561956563695192,762,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_liquidity_guard__p017,-0.9960754217286896,1114,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
+momentum_liquidity_guard__p018,-0.953422836164888,744,2016-01-05 00:00:00,2026-05-01 00:00:00,selected candidates have severe drawdown risk where applicable
