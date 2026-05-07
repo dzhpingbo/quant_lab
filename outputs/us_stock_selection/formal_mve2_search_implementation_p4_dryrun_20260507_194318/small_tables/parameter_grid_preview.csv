@@ -1,0 +1,5 @@
+section,item,values,execute_in_dry_run
+rebalance,frequency,monthly;quarterly,False
+holding,max_position_weight,0.10;0.15;0.20,False
+cost,cost_bps_grid,0;5;10;20;50,False
+slippage,slippage_bps_grid,0;5;10;20,False

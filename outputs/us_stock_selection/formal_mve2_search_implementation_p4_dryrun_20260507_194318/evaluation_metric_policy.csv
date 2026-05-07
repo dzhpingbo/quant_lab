@@ -1,0 +1,15 @@
+metric,required_for_future_search_report,computed_in_p4_dry_run,notes
+CAGR,True,False,schema only; no formal result computed
+MDD,True,False,schema only; no formal result computed
+Calmar,True,False,schema only; no formal result computed
+Sharpe,True,False,schema only; no formal result computed
+Sortino,True,False,schema only; no formal result computed
+volatility,True,False,schema only; no formal result computed
+turnover,True,False,schema only; no formal result computed
+hit_rate,True,False,schema only; no formal result computed
+benchmark_excess_return,True,False,schema only; no formal result computed
+yearly_return,True,False,schema only; no formal result computed
+subperiod_return,True,False,schema only; no formal result computed
+drawdown_duration,True,False,schema only; no formal result computed
+cost_stress_sensitivity,True,False,schema only; no formal result computed
+risk_flag_exposure,True,False,schema only; no formal result computed

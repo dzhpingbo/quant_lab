@@ -1,0 +1,6 @@
+stage,name,required_before_baseline_candidate,auto_promotes_baseline
+P4,implementation,True,False
+P5,controlled search run,True,False
+P6,validation audit pack,True,False
+P7,comparison against v8.2 frozen baseline,True,False
+P8,decision gate and human review,True,False

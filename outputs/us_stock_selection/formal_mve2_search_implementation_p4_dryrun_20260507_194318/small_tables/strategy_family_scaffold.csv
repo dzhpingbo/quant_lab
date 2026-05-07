@@ -1,0 +1,5 @@
+section,item,values,execute_in_dry_run
+strategy_family,trend_following,sma;ema;breakout,False
+strategy_family,time_series_momentum,21d;63d;126d;252d,False
+strategy_family,volatility_filter,20d;63d;252d,False
+strategy_family,drawdown_guardrail,10pct;15pct;20pct;25pct,False

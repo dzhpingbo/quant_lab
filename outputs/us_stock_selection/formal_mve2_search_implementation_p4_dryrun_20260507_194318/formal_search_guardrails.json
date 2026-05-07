@@ -1,0 +1,15 @@
+{
+  "dry_run_only": true,
+  "full_search_not_executed": true,
+  "no_candidate_selected": true,
+  "no_formal_candidate_ranking": true,
+  "no_baseline_replacement": true,
+  "no_v10": true,
+  "no_training": true,
+  "no_original_data_modified": true,
+  "audit_csv_not_modified": true,
+  "group4_not_touched": true,
+  "formal_v9_not_used_as_baseline": true,
+  "limited_mve2_not_used_as_formal_baseline": true,
+  "dryrun_success": true
+}

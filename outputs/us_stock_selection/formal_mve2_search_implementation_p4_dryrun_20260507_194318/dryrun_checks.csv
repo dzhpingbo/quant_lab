@@ -1,0 +1,14 @@
+check_item,path,exists,status,note
+P2-C final readiness,outputs/us_stock_selection/formal_mve2_data_quality_gate_p2c_recheck_20260507_170809/final_readiness_decision.json,True,PASS,required for P4 dry-run scaffold
+P2-C universe summary,outputs/us_stock_selection/formal_mve2_data_quality_gate_p2c_recheck_20260507_170809/universe_readiness_summary.csv,True,PASS,required for P4 dry-run scaffold
+P2-C accepted quality flags,outputs/us_stock_selection/formal_mve2_data_quality_gate_p2c_recheck_20260507_170809/accepted_quality_flags.csv,True,PASS,required for P4 dry-run scaffold
+P2-C data lineage,outputs/us_stock_selection/formal_mve2_data_quality_gate_p2c_recheck_20260507_170809/data_source_lineage_summary.csv,True,PASS,required for P4 dry-run scaffold
+P2-C entry checklist,outputs/us_stock_selection/formal_mve2_data_quality_gate_p2c_recheck_20260507_170809/formal_mve2_entry_checklist.csv,True,PASS,required for P4 dry-run scaffold
+limited MVE2 validation manifest,outputs/us_stock_selection/limited_mve2_validation_20260502_183555/manifest.json,True,PASS,required for P4 dry-run scaffold
+eligible universe,outputs/us_stock_selection/limited_mve2_20260502_142702/eligible_universe_limited_mve2.csv,True,PASS,required for P4 dry-run scaffold
+excluded universe,outputs/us_stock_selection/limited_mve2_20260502_142702/excluded_tickers_limited_mve2.csv,True,PASS,required for P4 dry-run scaffold
+audited store root,data/unified_ohlcv/us_stock_selection,True,PASS,required for P4 dry-run scaffold
+price parquet directory,data/unified_ohlcv/us_stock_selection/prices,True,PASS,required for P4 dry-run scaffold
+store audit directory,data/unified_ohlcv/us_stock_selection/audit,True,PASS,required for P4 dry-run scaffold
+v8.2 comparison metadata,outputs/us_stock_selection/v82_frozen_formal_audit_20260506_113454/v82_frozen_formal_audit.md,True,PASS,required for P4 dry-run scaffold
+formal v9 failure warning metadata,outputs/us_stock_selection/formal_v9_20260505_224016/audit/formal_v9_failure_audit.md,True,PASS,required for P4 dry-run scaffold

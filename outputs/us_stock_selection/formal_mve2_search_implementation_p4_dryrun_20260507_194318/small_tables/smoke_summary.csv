@@ -1,0 +1,6 @@
+item,status
+p2c_pass,True
+inputs_present,True
+universe_counts_match,True
+full_search_executed,False
+candidate_ranking_generated,False

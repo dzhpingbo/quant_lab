@@ -1,0 +1,4 @@
+policy_item,count,rule,formal_candidate_pool_allowed
+search_universe,51,fixed by P2-C passed audited-store universe,False
+eligible,40,eligible tickers only may enter future formal candidate pool,True
+excluded,11,excluded tickers are observation and audit reference only,False
