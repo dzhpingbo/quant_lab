@@ -1,0 +1,8 @@
+metric,value,status
+eligible_ticker_count,40,PASS
+excluded_ticker_count,11,PASS
+search_universe_count,51,PASS
+price_file_ticker_count,51,PASS
+universe_missing_price_count,0,PASS
+price_not_in_search_universe_count,0,PASS
+candidate_not_eligible_count,0,PASS

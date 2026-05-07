@@ -1,0 +1,4 @@
+flag_type,accepted_action,count
+large_daily_price_jump,KEEP_WITH_FLAG,5
+large_daily_price_jump,OBSERVATION_ONLY,2
+non_positive_volume,KEEP_WITH_FLAG,6

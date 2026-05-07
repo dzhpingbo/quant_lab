@@ -1,0 +1,11 @@
+blocker,present,status,detail
+data_unreadable,False,CLEAR,P2-B2 parquet readability summary shows 51/51 readable.
+required_fields_missing,False,CLEAR,P2-A field coverage shows required fields present for 51/51.
+universe_not_reproducible,False,CLEAR,P2-A universe summary has eligible/excluded evidence.
+eligible_excluded_not_reproducible,False,CLEAR,Limited MVE2 search files provide eligible/excluded CSVs.
+formal_v9_mixed_in,False,CLEAR,formal v9 is excluded from the data source lineage.
+limited_mve2_mixed_with_formal_baseline,False,CLEAR,limited MVE2 remains an independent research line.
+audit_metadata_unexplained,False,CLEAR,P2-B2 reconciled stale audit metadata.
+raw_data_repair_required,False,CLEAR,No raw data repair is required for P2-C.
+group4_dependency,False,CLEAR,group4 is not an input to this gate.
+required_input_missing,False,CLEAR,none

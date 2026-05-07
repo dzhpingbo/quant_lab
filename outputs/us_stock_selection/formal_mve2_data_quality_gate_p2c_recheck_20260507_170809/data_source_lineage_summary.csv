@@ -1,0 +1,8 @@
+lineage_item,path,role,allowed_for_p3_design
+primary_data_source,data/unified_ohlcv/us_stock_selection,audited unified adjusted OHLCV store,True
+price_parquet_dir,data/unified_ohlcv/us_stock_selection/prices,price entity data,True
+limited_mve2_validation_pack,outputs/us_stock_selection/limited_mve2_validation_20260502_183555,independent research evidence and warning context only,True
+formal_v9_outputs,excluded,failed branch; not baseline; not a data source,False
+v82_formal_baseline_outputs,excluded,comparison baseline only; not a data source for formal MVE2,False
+old_qlib_old_v8_cache,excluded,explicitly excluded,False
+group4,excluded,local hold artifacts; not read as input,False

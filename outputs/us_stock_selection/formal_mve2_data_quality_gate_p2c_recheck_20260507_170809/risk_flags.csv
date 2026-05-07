@@ -1,0 +1,7 @@
+flag_id,severity,status,detail
+p2c_final_readiness,info,PASS_TO_P3_FORMAL_MVE2_DESIGN,Final data quality gate recheck decision.
+p3_design_only,critical,ENFORCED,"PASS allows P3 design only, not formal search execution."
+direct_formal_search,critical,FORBIDDEN,No formal MVE2 search is authorized by P2-C.
+direct_v10,critical,FORBIDDEN,No v10 is authorized by P2-C.
+group4_not_used,critical,PASS,group4 hold artifacts are not inputs.
+residual_warning_flags,warning,ACCEPTED_FOR_DESIGN,Volume and price jump warnings remain flags for P3 design.

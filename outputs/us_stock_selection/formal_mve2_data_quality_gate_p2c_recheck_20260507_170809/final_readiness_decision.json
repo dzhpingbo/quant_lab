@@ -1,0 +1,28 @@
+{
+  "run_id": "formal_mve2_data_quality_gate_p2c_recheck_20260507_170809",
+  "final_readiness_decision": "PASS_TO_P3_FORMAL_MVE2_DESIGN",
+  "can_enter_p3_formal_mve2_search_design": true,
+  "direct_formal_mve2_search_allowed": false,
+  "direct_v10_allowed": false,
+  "reasons": [
+    "P2-A/P2-B/P2-B2 evidence resolves prior blockers.",
+    "Residual volume and price jump issues are accepted quality flags.",
+    "Only P3 design is allowed; no formal search or v10 execution is authorized."
+  ],
+  "required_next_step": "P3_FORMAL_MVE2_SEARCH_DESIGN",
+  "p3_design_requirements": [
+    "define formal MVE2 universe",
+    "define benchmark set",
+    "define risk constraints",
+    "define search space",
+    "define output package structure",
+    "define commit and stage rules"
+  ],
+  "group4_hold_not_touched": true,
+  "raw_data_modified": false,
+  "audit_csv_modified": false,
+  "strategy_search_executed": false,
+  "model_training_executed": false,
+  "formal_mve2_executed": false,
+  "v10_executed": false
+}

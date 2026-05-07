@@ -1,0 +1,6 @@
+issue,status,evidence,detail
+audit_metadata_conflict,RESOLVED_FOR_P2C,outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/reconciliation_decision.json,Explained as stale audit metadata.
+parquet_readability,PASS,outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/parquet_readability_summary.csv,51/51 price parquet files are readable.
+required_fields,PASS,outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/field_coverage_summary.csv,"date, ticker, adj_close, volume present for 51/51 price files."
+store_manifest_row_count,PASS,outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/row_count_reconciliation.csv,Store manifest row counts match parquet row counts for 51/51 tickers.
+provenance_timing,NON_BLOCKING,outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/small_tables/commit_metadata_reconciliation.csv,Generated pack commit timing differences are recorded as provenance context.

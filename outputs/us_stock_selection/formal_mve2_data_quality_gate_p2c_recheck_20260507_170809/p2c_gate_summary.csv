@@ -1,0 +1,9 @@
+metric,value
+final_readiness_decision,PASS_TO_P3_FORMAL_MVE2_DESIGN
+can_enter_p3_formal_mve2_search_design,True
+direct_formal_mve2_search_allowed,False
+direct_v10_allowed,False
+unresolved_blocker_count,0
+residual_warning_classes,2
+accepted_quality_flag_rows,13
+missing_input_count,0
