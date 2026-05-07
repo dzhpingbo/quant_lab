@@ -1,0 +1,7 @@
+ticker,eligible_status,in_limited_mve2_candidate,total_trading_days,volume_missing_count,volume_zero_count,volume_negative_count,non_positive_volume_count,non_positive_volume_rate,first_non_positive_volume_date,last_non_positive_volume_date,longest_non_positive_volume_run,median_volume,tradability_impact,recommendation,rationale,whether_blocks_p3
+AAPL,eligible,False,11438,0,1,0,1,8.742787200559538e-05,1981-08-10,1981-08-10,1,196924000.0,LOW_FLAG_ONLY,KEEP_WITH_FLAG,Eligible ticker has isolated non-positive volume rows.,False
+AMD,eligible,False,11626,0,2,0,2,0.0001720282126268708,1982-10-05,2015-01-02,1,8119000.0,LOW_FLAG_ONLY,KEEP_WITH_FLAG,Eligible ticker has isolated non-positive volume rows.,False
+ARKK,eligible,False,2891,0,8,0,8,0.002767208578346593,2016-03-23,2016-11-16,1,1758100.0,LOW_FLAG_ONLY,KEEP_WITH_FLAG,Eligible ticker has isolated non-positive volume rows.,False
+IGV,eligible,False,6235,0,7,0,7,0.0011226944667201283,2001-07-23,2001-10-19,1,775500.0,LOW_FLAG_ONLY,KEEP_WITH_FLAG,Eligible ticker has isolated non-positive volume rows.,False
+INTC,eligible,False,11626,0,1,0,1,8.60141063134354e-05,1981-08-10,1981-08-10,1,45568600.0,LOW_FLAG_ONLY,KEEP_WITH_FLAG,Eligible ticker has isolated non-positive volume rows.,False
+SHOP,eligible,False,2754,0,1,0,1,0.00036310820624546115,2015-05-20,2015-05-20,1,12128550.0,LOW_FLAG_ONLY,KEEP_WITH_FLAG,Eligible ticker has isolated non-positive volume rows.,False

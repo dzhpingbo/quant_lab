@@ -1,0 +1,12 @@
+item,status,value
+script_path,PASS,scripts/us_stock_selection/54_review_formal_mve2_gate_exceptions.py
+git_commit,PASS,02e643593c92e7c0d55f28faa210a181f6454544
+p2a_output_dir,PASS,outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224
+store_dir,PASS,data/unified_ohlcv/us_stock_selection
+validation_pack_dir,PASS,outputs/us_stock_selection/limited_mve2_validation_20260502_183555
+group4_hold_not_touched,PASS,true
+raw_data_modified,PASS,false
+strategy_search_executed,PASS,false
+model_training_executed,PASS,false
+formal_mve2_executed,PASS,false
+v10_executed,PASS,false

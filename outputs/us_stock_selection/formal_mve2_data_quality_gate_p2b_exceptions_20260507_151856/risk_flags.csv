@@ -1,0 +1,5 @@
+flag_id,severity,status,affected_count,detail
+non_positive_volume_review,warning,PASS,6,Non-positive volume exceptions were expanded to event-level ticker recommendations.
+price_jump_review,warning,PASS,7,Large adjusted-return jumps were checked against price windows and action files.
+metadata_conflict_review,warning,REVIEW,51,Audit metadata conflict appears separate from readable parquet data but still blocks P3.
+gate_exception_decision,info,CONDITIONAL_NEEDS_DATA_REVIEW,0,P2-B exception review decision.

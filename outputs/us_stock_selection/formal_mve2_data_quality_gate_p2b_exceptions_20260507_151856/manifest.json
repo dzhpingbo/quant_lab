@@ -1,0 +1,43 @@
+{
+  "run_id": "formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856",
+  "run_type": "formal_mve2_data_quality_gate_p2b_exceptions_review",
+  "generated_at": "2026-05-07T15:18:57",
+  "git_commit": "02e643593c92e7c0d55f28faa210a181f6454544",
+  "script_path": "scripts/us_stock_selection/54_review_formal_mve2_gate_exceptions.py",
+  "input_paths": [
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224",
+    "data/unified_ohlcv/us_stock_selection",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555"
+  ],
+  "output_dir": "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856",
+  "generated_files": [
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/README.md",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/manifest.json",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/p2b_exception_review_report.md",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/exception_review_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/volume_exception_detail.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/price_jump_detail.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/metadata_conflict_detail.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/ticker_level_recommendations.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/formal_mve2_gate_exception_decision.json",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/reproducibility_checklist.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/risk_flags.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856/small_tables"
+  ],
+  "explicit_exclusions": [
+    "old qlib",
+    "old v8 cache",
+    "formal v9 output",
+    "v8.2 formal baseline output"
+  ],
+  "gate_exception_decision": "CONDITIONAL_NEEDS_DATA_REVIEW",
+  "can_enter_p2c_gate_recheck": false,
+  "can_enter_p3_formal_mve2_search_design": false,
+  "direct_v10_allowed": false,
+  "group4_hold_not_touched": true,
+  "raw_data_modified": false,
+  "strategy_search_executed": false,
+  "model_training_executed": false,
+  "formal_mve2_executed": false,
+  "v10_executed": false
+}

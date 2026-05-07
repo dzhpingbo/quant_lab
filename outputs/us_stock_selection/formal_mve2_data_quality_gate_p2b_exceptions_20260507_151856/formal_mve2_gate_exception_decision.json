@@ -1,0 +1,19 @@
+{
+  "run_id": "formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856",
+  "p2a_run_id": "formal_mve2_data_quality_gate_20260507_142224",
+  "gate_exception_decision": "CONDITIONAL_NEEDS_DATA_REVIEW",
+  "can_enter_p2c_gate_recheck": false,
+  "can_enter_p3_formal_mve2_search_design": false,
+  "direct_v10_allowed": false,
+  "reasons": [
+    "vendor_review_recommendations=0",
+    "audit_metadata_warning_rows=51",
+    "P3 remains blocked until exceptions are reviewed."
+  ],
+  "group4_hold_not_touched": true,
+  "raw_data_modified": false,
+  "strategy_search_executed": false,
+  "model_training_executed": false,
+  "formal_mve2_executed": false,
+  "v10_executed": false
+}

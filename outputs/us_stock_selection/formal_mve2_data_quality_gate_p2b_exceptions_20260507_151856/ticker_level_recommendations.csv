@@ -1,0 +1,52 @@
+ticker,eligible_status,anomaly_types,severity,recommended_action,rationale,whether_blocks_p3
+AAPL,eligible,non_positive_volume;large_daily_price_jump;audit_metadata_conflict,WARNING,KEEP_WITH_FLAG,Ticker has isolated quality flags but no direct block after this review.,False
+ADBE,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+AFRM,excluded,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+AMD,eligible,non_positive_volume;large_daily_price_jump;audit_metadata_conflict,WARNING,KEEP_WITH_FLAG,Ticker has isolated quality flags but no direct block after this review.,False
+AMZN,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+ARKK,eligible,non_positive_volume;audit_metadata_conflict,WARNING,KEEP_WITH_FLAG,Ticker has isolated quality flags but no direct block after this review.,False
+AVGO,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+CIBR,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+COIN,excluded,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+CRM,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+CRWD,excluded,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+DIA,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+GLD,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+GOOGL,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+IBB,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+IGV,eligible,non_positive_volume;audit_metadata_conflict,WARNING,KEEP_WITH_FLAG,Ticker has isolated quality flags but no direct block after this review.,False
+INTC,eligible,non_positive_volume;audit_metadata_conflict,WARNING,KEEP_WITH_FLAG,Ticker has isolated quality flags but no direct block after this review.,False
+IWM,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+LCID,excluded,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+META,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+MSFT,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+MSTR,eligible,large_daily_price_jump;audit_metadata_conflict,WARNING,KEEP_WITH_FLAG,Ticker has isolated quality flags but no direct block after this review.,False
+MU,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+NET,excluded,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+NFLX,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+NOW,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+NVDA,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+ORCL,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+PANW,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+PLTR,excluded,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+QLD,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+QQQ,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+RIVN,excluded,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+ROKU,excluded,large_daily_price_jump;audit_metadata_conflict,WARNING,OBSERVATION_ONLY,Ticker has isolated quality flags but no direct block after this review.,False
+SHOP,eligible,non_positive_volume;large_daily_price_jump;audit_metadata_conflict,WARNING,KEEP_WITH_FLAG,Ticker has isolated quality flags but no direct block after this review.,False
+SHY,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+SKYY,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+SMH,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+SNOW,excluded,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+SOXL,eligible,large_daily_price_jump;audit_metadata_conflict,WARNING,KEEP_WITH_FLAG,Ticker has isolated quality flags but no direct block after this review.,False
+SOXX,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+SPY,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+SSO,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+TLT,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+TQQQ,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+TSLA,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+UBER,excluded,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+UPRO,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+UPST,excluded,large_daily_price_jump;audit_metadata_conflict,WARNING,OBSERVATION_ONLY,Ticker has isolated quality flags but no direct block after this review.,False
+XBI,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False
+XLK,eligible,audit_metadata_conflict,METADATA_REVIEW,KEEP_WITH_FLAG,Only audit metadata conflict is present; price parquet is readable.,False

@@ -1,0 +1,11 @@
+metric,value
+p2a_readiness,CONDITIONAL_NEEDS_REVIEW
+p2b_decision,CONDITIONAL_NEEDS_DATA_REVIEW
+can_enter_p2c_gate_recheck,False
+can_enter_p3_formal_search_design,False
+direct_v10_allowed,False
+non_positive_volume_ticker_count,6
+price_jump_ticker_count,7
+price_jump_event_count,9
+metadata_warning_rows,51
+missing_required_inputs,none
