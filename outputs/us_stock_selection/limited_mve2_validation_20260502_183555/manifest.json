@@ -1,0 +1,60 @@
+{
+  "run_id": "limited_mve2_validation_20260502_183555",
+  "run_type": "limited_mve2_validation_pack",
+  "generated_at": "2026-05-07T14:04:24",
+  "git_commit": "0ddd8bb8cc6772d6d6bb6fa098bd4795808fa7a9",
+  "source_search_run": "limited_mve2_20260502_142702",
+  "validation_pack_dir": "outputs/us_stock_selection/limited_mve2_validation_20260502_183555",
+  "input_dirs": [
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555",
+    "outputs/us_stock_selection/limited_mve2_20260502_142702"
+  ],
+  "key_input_files": [
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/validation_decision_summary.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/validation_risk_flags.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/validation_benchmark_comparison.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/validation_cost_stress_results.csv",
+    "outputs/us_stock_selection/limited_mve2_20260502_142702/eligible_universe_limited_mve2.csv",
+    "outputs/us_stock_selection/limited_mve2_20260502_142702/excluded_tickers_limited_mve2.csv"
+  ],
+  "generated_files": [
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/manifest.json",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/key_metrics_summary.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/selected_report.md",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/README.md",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/small_tables/decision_counts.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/small_tables/candidate_decisions.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/small_tables/available_evidence_files.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/small_tables/missing_or_partial_items.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/small_tables/data_source_policy.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555/small_tables/reproducibility_checklist.csv",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555.zip"
+  ],
+  "candidate_count": 9,
+  "decision_counts": {
+    "pass_to_next_validation": 1,
+    "conditional": 6,
+    "conditional_total": 6,
+    "observation_only": 2,
+    "raw": {
+      "conditional_pass": 5,
+      "observation_only": 2,
+      "pass_to_next_validation": 1,
+      "conditional_pass_leveraged_bucket": 1
+    }
+  },
+  "data_source_policy": "audited unified adjusted OHLCV store only",
+  "fields_used": [
+    "adj_close",
+    "volume"
+  ],
+  "formal_mve2_supported": false,
+  "evidence_chain_scope": "limited_mve2_independent_research_line",
+  "explicit_exclusions": [
+    "old qlib",
+    "old v8 cache",
+    "formal v9 output",
+    "v8.2 formal baseline output"
+  ],
+  "group4_hold_not_touched": true
+}

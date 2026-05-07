@@ -1,0 +1,8 @@
+count_scope,decision,count
+raw,conditional_pass,5
+raw,observation_only,2
+raw,pass_to_next_validation,1
+raw,conditional_pass_leveraged_bucket,1
+collapsed,pass_to_next_validation,1
+collapsed,conditional_total,6
+collapsed,observation_only,2
