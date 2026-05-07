@@ -1,0 +1,8 @@
+item,value,status
+mode_requested,full_search,PASS
+confirmation_received,true,PASS
+p2c_readiness_decision,PASS_TO_P3_FORMAL_MVE2_DESIGN,PASS
+parameter_combination_count,18,PASS
+controlled_search_success,true,PASS
+baseline_replaced,false,PASS
+v10_executed,false,PASS

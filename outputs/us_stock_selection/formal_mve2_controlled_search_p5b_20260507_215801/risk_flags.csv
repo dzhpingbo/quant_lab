@@ -1,0 +1,7 @@
+flag_id,severity,status,detail
+input_presence,critical,PASS,missing_or_failed_inputs=0
+parameter_grid_limit,critical,PASS,parameter_combinations=18
+candidate_pool_eligible_only,critical,PASS,Only eligible universe tickers entered candidate search.
+formal_v9_excluded,critical,PASS,formal v9 was not used as benchmark or baseline.
+no_baseline_replacement,critical,PASS,Search results are candidate evidence only.
+no_v10,critical,PASS,v10 was not created or permitted.

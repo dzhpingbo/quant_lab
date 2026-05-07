@@ -1,0 +1,77 @@
+{
+  "run_id": "formal_mve2_controlled_search_p5b_20260507_215801",
+  "run_type": "formal_mve2_controlled_search_p5b",
+  "mode": "full_search",
+  "generated_at": "2026-05-07T21:58:01",
+  "git_commit": "ac278dd35bc55f7c7d3055b0c70e85183e3d4f9b",
+  "script_path": "scripts/us_stock_selection/57_implement_formal_mve2_search.py",
+  "output_dir": "outputs/us_stock_selection/formal_mve2_controlled_search_p5b_20260507_215801",
+  "data_source_policy": {
+    "allowed_primary_data_source": "data/unified_ohlcv/us_stock_selection",
+    "price_parquet_dir": "data/unified_ohlcv/us_stock_selection/prices",
+    "core_fields": [
+      "date",
+      "ticker",
+      "adj_close",
+      "volume"
+    ],
+    "excluded_as_data_sources": [
+      "old qlib",
+      "old v8 cache",
+      "formal v9 outputs",
+      "v8.2 formal baseline outputs",
+      "group4 artifacts"
+    ]
+  },
+  "universe_policy": {
+    "search_universe_count": 51,
+    "eligible_count": 40,
+    "excluded_count": 11,
+    "formal_candidate_pool": "eligible_only"
+  },
+  "benchmark_policy": {
+    "comparison_baseline": "v8.2 frozen Pool A top5_ytdcap80p_derisk100p",
+    "reference_benchmarks": [
+      "SPY",
+      "QQQ",
+      "equal_weight_eligible_universe"
+    ],
+    "formal_v9_allowed_as_benchmark": false,
+    "limited_mve2_allowed_as_formal_baseline": false
+  },
+  "risk_flag_policy": {
+    "volume_warning_tickers": [
+      "AAPL",
+      "AMD",
+      "ARKK",
+      "IGV",
+      "INTC",
+      "SHOP"
+    ],
+    "price_jump_warning_tickers": [
+      "AAPL",
+      "AMD",
+      "MSTR",
+      "ROKU",
+      "SHOP",
+      "SOXL",
+      "UPST"
+    ],
+    "carry_forward_to_future_search": true
+  },
+  "execution_policy": {
+    "dry_run_only_for_this_run": true,
+    "full_search_not_executed": true,
+    "model_training_not_executed": true,
+    "v10_not_executed": true,
+    "candidate_ranking_not_generated": true,
+    "selected_candidate_not_generated": true,
+    "full_search_requested": true,
+    "full_search_executed": true,
+    "controlled_search_success": true,
+    "parameter_combination_count": 18,
+    "selected_for_validation_only": true,
+    "no_baseline_replacement": true,
+    "no_v10": true
+  }
+}

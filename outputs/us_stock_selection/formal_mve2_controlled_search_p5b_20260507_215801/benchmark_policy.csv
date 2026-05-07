@@ -1,0 +1,7 @@
+benchmark,role,allowed,data_source_role,notes
+v8.2 frozen Pool A top5_ytdcap80p_derisk100p,formal comparison baseline,True,comparison metadata only,not a formal MVE2 data source
+SPY,reference benchmark,True,audited store ticker if available,subject to data availability
+QQQ,reference benchmark,True,audited store ticker if available,subject to data availability
+equal_weight_eligible_universe,reference benchmark,True,derived from eligible audited-store tickers,future P5 calculation only
+formal v9,failed branch warning,False,excluded,must not be used as benchmark or baseline
+limited MVE2 candidates,research reference only,False,not a formal baseline,cannot replace v8.2 baseline

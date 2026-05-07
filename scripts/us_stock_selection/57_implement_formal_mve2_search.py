@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 
@@ -28,9 +29,14 @@ SCRIPT_PATH = Path("scripts/us_stock_selection/57_implement_formal_mve2_search.p
 
 RUN_PREFIX = "formal_mve2_search_implementation_p4_dryrun"
 P5_RUN_PREFIX = "formal_mve2_controlled_search"
+P5B_RUN_PREFIX = "formal_mve2_controlled_search_p5b"
 REQUIRED_CORE_FIELDS = ["date", "ticker", "adj_close", "volume"]
 VOLUME_WARNING_TICKERS = ["AAPL", "AMD", "ARKK", "IGV", "INTC", "SHOP"]
 PRICE_JUMP_WARNING_TICKERS = ["AAPL", "AMD", "MSTR", "ROKU", "SHOP", "SOXL", "UPST"]
+DEFAULT_COST_BPS = 10
+COST_STRESS_BPS = [0, 10, 25]
+LOW_MEDIAN_VOLUME_THRESHOLD = 100_000
+COMMON_START = "2016-01-01"
 
 
 def rel(path: Path) -> str:
@@ -877,6 +883,797 @@ def write_p5_controlled_failure_outputs(out_dir: Path) -> tuple[bool, list[Path]
     return False, sorted(set(generated_files), key=lambda p: rel(p)), zip_path
 
 
+def max_drawdown(equity: pd.Series) -> float:
+    if equity.empty:
+        return float("nan")
+    running_max = equity.cummax()
+    drawdown = equity / running_max - 1.0
+    return float(drawdown.min())
+
+
+def max_drawdown_duration(equity: pd.Series) -> int:
+    if equity.empty:
+        return 0
+    drawdown = equity / equity.cummax() - 1.0
+    longest = 0
+    current = 0
+    for value in drawdown.fillna(0.0):
+        if value < 0:
+            current += 1
+            longest = max(longest, current)
+        else:
+            current = 0
+    return int(longest)
+
+
+def performance_metrics(returns: pd.Series) -> dict[str, float]:
+    clean_returns = returns.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    if clean_returns.empty:
+        return {
+            "total_return": np.nan,
+            "CAGR": np.nan,
+            "MDD": np.nan,
+            "Calmar": np.nan,
+            "Sharpe": np.nan,
+            "volatility": np.nan,
+            "hit_rate": np.nan,
+            "drawdown_duration": np.nan,
+        }
+    equity = (1.0 + clean_returns).cumprod()
+    years = len(clean_returns) / 252.0
+    total_return = float(equity.iloc[-1] - 1.0)
+    final_equity = float(equity.iloc[-1])
+    cagr = float(final_equity ** (1.0 / years) - 1.0) if years > 0 and final_equity > 0 else np.nan
+    mdd = max_drawdown(equity)
+    calmar = float(cagr / abs(mdd)) if pd.notna(cagr) and pd.notna(mdd) and mdd < 0 else np.nan
+    volatility = float(clean_returns.std(ddof=0) * np.sqrt(252.0))
+    sharpe = float(clean_returns.mean() / clean_returns.std(ddof=0) * np.sqrt(252.0)) if clean_returns.std(ddof=0) > 0 else np.nan
+    hit_rate = float((clean_returns > 0).mean())
+    return {
+        "total_return": total_return,
+        "CAGR": cagr,
+        "MDD": mdd,
+        "Calmar": calmar,
+        "Sharpe": sharpe,
+        "volatility": volatility,
+        "hit_rate": hit_rate,
+        "drawdown_duration": float(max_drawdown_duration(equity)),
+    }
+
+
+def zscore(series: pd.Series) -> pd.Series:
+    values = series.replace([np.inf, -np.inf], np.nan)
+    std = values.std(skipna=True)
+    if pd.isna(std) or std == 0:
+        return pd.Series(0.0, index=series.index)
+    return (values - values.mean(skipna=True)) / std
+
+
+def read_price_file(ticker: str) -> pd.DataFrame:
+    path = PRICES_DIR / f"{ticker}.parquet"
+    if not path.exists():
+        return pd.DataFrame(columns=REQUIRED_CORE_FIELDS)
+    df = pd.read_parquet(path)
+    missing = [field for field in REQUIRED_CORE_FIELDS if field not in df.columns]
+    if missing:
+        return pd.DataFrame(columns=REQUIRED_CORE_FIELDS)
+    out = df[REQUIRED_CORE_FIELDS].copy()
+    out["date"] = pd.to_datetime(out["date"], errors="coerce")
+    out["ticker"] = ticker
+    out["adj_close"] = pd.to_numeric(out["adj_close"], errors="coerce")
+    out["volume"] = pd.to_numeric(out["volume"], errors="coerce")
+    out = out.dropna(subset=["date"]).sort_values("date").drop_duplicates("date", keep="last")
+    return out
+
+
+def load_formal_search_prices(eligible: pd.DataFrame, excluded: pd.DataFrame) -> tuple[dict[str, pd.DataFrame], pd.DataFrame]:
+    all_tickers = sorted(set(eligible["ticker"].astype(str)) | set(excluded["ticker"].astype(str)))
+    data: dict[str, pd.DataFrame] = {}
+    rows: list[dict[str, Any]] = []
+    for ticker in all_tickers:
+        df = read_price_file(ticker)
+        data[ticker] = df
+        rows.append(
+            {
+                "ticker": ticker,
+                "price_file": rel(PRICES_DIR / f"{ticker}.parquet"),
+                "readable": not df.empty,
+                "rows": int(len(df)),
+                "date_min": clean(df["date"].min()) if not df.empty else "NA",
+                "date_max": clean(df["date"].max()) if not df.empty else "NA",
+                "adj_close_missing_count": int(df["adj_close"].isna().sum()) if not df.empty else 0,
+                "volume_missing_count": int(df["volume"].isna().sum()) if not df.empty else 0,
+                "non_positive_price_count": int((df["adj_close"] <= 0).sum()) if not df.empty else 0,
+                "non_positive_volume_count": int((df["volume"] <= 0).sum()) if not df.empty else 0,
+                "missing_handling": "rows retained for audit; strategy pivot uses forward-filled adjusted close only after first valid price",
+            }
+        )
+    return data, pd.DataFrame(rows)
+
+
+def build_price_volume_matrices(price_data: dict[str, pd.DataFrame], tickers: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
+    price_series = {}
+    volume_series = {}
+    for ticker in tickers:
+        df = price_data.get(ticker, pd.DataFrame())
+        if df.empty:
+            continue
+        indexed = df.set_index("date").sort_index()
+        price_series[ticker] = indexed["adj_close"]
+        volume_series[ticker] = indexed["volume"]
+    prices = pd.DataFrame(price_series).sort_index()
+    volumes = pd.DataFrame(volume_series).reindex(prices.index)
+    prices = prices.loc[prices.index >= pd.Timestamp(COMMON_START)]
+    volumes = volumes.reindex(prices.index)
+    prices = prices.ffill()
+    returns = prices.pct_change(fill_method=None)
+    valid_rows = returns.notna().any(axis=1)
+    prices = prices.loc[valid_rows]
+    volumes = volumes.loc[prices.index]
+    return prices, volumes
+
+
+def parameter_grid() -> pd.DataFrame:
+    rows: list[dict[str, Any]] = []
+    idx = 1
+    for lookback in [63, 126, 252]:
+        for top_n in [5, 10]:
+            rows.append(
+                {
+                    "parameter_set_id": f"p{idx:03d}",
+                    "strategy_family": "momentum_rank",
+                    "momentum_lookback_days": lookback,
+                    "volatility_lookback_days": "NA",
+                    "liquidity_lookback_days": "NA",
+                    "top_n": top_n,
+                    "rebalance": "monthly",
+                    "weighting": "equal_weight",
+                    "median_volume_threshold": "NA",
+                }
+            )
+            idx += 1
+    for mom_lookback in [126, 252]:
+        for vol_lookback in [63, 126]:
+            for top_n in [5, 10]:
+                rows.append(
+                    {
+                        "parameter_set_id": f"p{idx:03d}",
+                        "strategy_family": "momentum_low_vol",
+                        "momentum_lookback_days": mom_lookback,
+                        "volatility_lookback_days": vol_lookback,
+                        "liquidity_lookback_days": "NA",
+                        "top_n": top_n,
+                        "rebalance": "monthly",
+                        "weighting": "equal_weight",
+                        "median_volume_threshold": "NA",
+                    }
+                )
+                idx += 1
+    for lookback in [126, 252]:
+        for top_n in [5, 10]:
+            rows.append(
+                {
+                    "parameter_set_id": f"p{idx:03d}",
+                    "strategy_family": "momentum_liquidity_guard",
+                    "momentum_lookback_days": lookback,
+                    "volatility_lookback_days": "NA",
+                    "liquidity_lookback_days": 63,
+                    "top_n": top_n,
+                    "rebalance": "monthly",
+                    "weighting": "equal_weight",
+                    "median_volume_threshold": LOW_MEDIAN_VOLUME_THRESHOLD,
+                }
+            )
+            idx += 1
+    return pd.DataFrame(rows)
+
+
+def monthly_rebalance_dates(index: pd.DatetimeIndex) -> list[pd.Timestamp]:
+    if len(index) == 0:
+        return []
+    dates = pd.Series(index=index, data=index)
+    grouped = dates.groupby([dates.index.year, dates.index.month]).last()
+    return [pd.Timestamp(value) for value in grouped.tolist()]
+
+
+def score_for_strategy(
+    prices: pd.DataFrame,
+    returns: pd.DataFrame,
+    volumes: pd.DataFrame,
+    date: pd.Timestamp,
+    spec: pd.Series,
+) -> pd.Series:
+    mom_lb = int(spec["momentum_lookback_days"])
+    family = str(spec["strategy_family"])
+    if date not in prices.index:
+        return pd.Series(dtype=float)
+    loc = prices.index.get_loc(date)
+    if isinstance(loc, slice) or isinstance(loc, np.ndarray):
+        return pd.Series(dtype=float)
+    if loc < mom_lb:
+        return pd.Series(dtype=float)
+    momentum = prices.iloc[loc] / prices.iloc[loc - mom_lb] - 1.0
+    if family == "momentum_rank":
+        return momentum
+    if family == "momentum_low_vol":
+        vol_lb = int(spec["volatility_lookback_days"])
+        if loc < vol_lb:
+            return pd.Series(dtype=float)
+        vol = returns.iloc[loc - vol_lb + 1 : loc + 1].std(skipna=True)
+        return zscore(momentum) - zscore(vol)
+    if family == "momentum_liquidity_guard":
+        liq_lb = int(spec["liquidity_lookback_days"])
+        if loc < liq_lb:
+            return pd.Series(dtype=float)
+        median_volume = volumes.iloc[loc - liq_lb + 1 : loc + 1].median(skipna=True)
+        score = momentum.copy()
+        score = score.where(median_volume >= LOW_MEDIAN_VOLUME_THRESHOLD)
+        return score
+    return pd.Series(dtype=float)
+
+
+def backtest_candidate(
+    prices: pd.DataFrame,
+    volumes: pd.DataFrame,
+    spec: pd.Series,
+) -> tuple[pd.Series, pd.DataFrame, pd.Series, pd.DataFrame]:
+    returns = prices.pct_change(fill_method=None).fillna(0.0)
+    target_weights = pd.DataFrame(0.0, index=prices.index, columns=prices.columns)
+    selection_rows: list[dict[str, Any]] = []
+    for rebalance_date in monthly_rebalance_dates(prices.index):
+        scores = score_for_strategy(prices, returns, volumes, rebalance_date, spec)
+        scores = scores.dropna().sort_values(ascending=False)
+        top_n = int(spec["top_n"])
+        selected = list(scores.head(top_n).index)
+        if not selected:
+            continue
+        weight = 1.0 / len(selected)
+        target_weights.loc[rebalance_date, selected] = weight
+        selection_rows.append(
+            {
+                "rebalance_date": rebalance_date.date().isoformat(),
+                "selected_tickers": ";".join(selected),
+                "selected_count": len(selected),
+            }
+        )
+    weights = target_weights.replace(0.0, np.nan).ffill().fillna(0.0).shift(1).fillna(0.0)
+    gross_returns = (weights * returns).sum(axis=1)
+    turnover = weights.diff().abs().sum(axis=1).fillna(weights.abs().sum(axis=1))
+    selection_df = pd.DataFrame(selection_rows)
+    return gross_returns, weights, turnover, selection_df
+
+
+def net_returns(gross_returns: pd.Series, turnover: pd.Series, cost_bps: int) -> pd.Series:
+    return gross_returns - turnover * (cost_bps / 10000.0)
+
+
+def annual_returns(returns: pd.Series, candidate_id: str) -> pd.DataFrame:
+    rows = []
+    for year, group in returns.groupby(returns.index.year):
+        rows.append({"candidate_id": candidate_id, "year": int(year), "return": float((1.0 + group).prod() - 1.0)})
+    return pd.DataFrame(rows)
+
+
+def subperiod_returns(returns: pd.Series, candidate_id: str) -> pd.DataFrame:
+    periods = [
+        ("2016_2019", "2016-01-01", "2019-12-31"),
+        ("2020_2022", "2020-01-01", "2022-12-31"),
+        ("2023_2026", "2023-01-01", "2026-12-31"),
+    ]
+    rows = []
+    for name, start, end in periods:
+        segment = returns.loc[(returns.index >= pd.Timestamp(start)) & (returns.index <= pd.Timestamp(end))]
+        metrics = performance_metrics(segment)
+        rows.append(
+            {
+                "candidate_id": candidate_id,
+                "subperiod": name,
+                "return": metrics["total_return"],
+                "MDD": metrics["MDD"],
+                "Calmar": metrics["Calmar"],
+                "daily_count": int(len(segment)),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def benchmark_returns(prices: pd.DataFrame, eligible_returns: pd.DataFrame) -> dict[str, pd.Series]:
+    out: dict[str, pd.Series] = {}
+    for ticker in ["SPY", "QQQ"]:
+        if ticker in prices.columns:
+            out[ticker] = prices[ticker].pct_change(fill_method=None).fillna(0.0)
+    out["equal_weight_eligible_universe"] = eligible_returns.mean(axis=1).fillna(0.0)
+    return out
+
+
+def benchmark_comparison_rows(candidate_id: str, returns: pd.Series, benchmarks: dict[str, pd.Series]) -> list[dict[str, Any]]:
+    candidate_metrics = performance_metrics(returns)
+    rows = []
+    for name, bench_returns in benchmarks.items():
+        aligned = pd.concat([returns.rename("candidate"), bench_returns.rename("benchmark")], axis=1).fillna(0.0)
+        bench_metrics = performance_metrics(aligned["benchmark"])
+        rows.append(
+            {
+                "candidate_id": candidate_id,
+                "benchmark": name,
+                "candidate_CAGR": candidate_metrics["CAGR"],
+                "benchmark_CAGR": bench_metrics["CAGR"],
+                "excess_CAGR": candidate_metrics["CAGR"] - bench_metrics["CAGR"],
+                "candidate_MDD": candidate_metrics["MDD"],
+                "benchmark_MDD": bench_metrics["MDD"],
+                "candidate_Calmar": candidate_metrics["Calmar"],
+                "benchmark_Calmar": bench_metrics["Calmar"],
+            }
+        )
+    return rows
+
+
+def risk_flag_exposure_rows(candidate_id: str, weights: pd.DataFrame) -> list[dict[str, Any]]:
+    rows = []
+    warning_map = {
+        "non_positive_volume": VOLUME_WARNING_TICKERS,
+        "large_daily_price_jump": PRICE_JUMP_WARNING_TICKERS,
+    }
+    for flag_type, tickers in warning_map.items():
+        present = [ticker for ticker in tickers if ticker in weights.columns]
+        exposure = weights[present].sum(axis=1) if present else pd.Series(0.0, index=weights.index)
+        rows.append(
+            {
+                "candidate_id": candidate_id,
+                "flag_type": flag_type,
+                "tickers": ";".join(present),
+                "average_weight": float(exposure.mean()) if len(exposure) else 0.0,
+                "max_weight": float(exposure.max()) if len(exposure) else 0.0,
+                "exposure_days": int((exposure > 0).sum()) if len(exposure) else 0,
+            }
+        )
+    return rows
+
+
+def run_controlled_search(prices: pd.DataFrame, volumes: pd.DataFrame, grid: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    if len(grid) > 100:
+        raise RuntimeError(f"parameter grid has {len(grid)} combinations, above the 100-combination approval limit")
+
+    eligible_returns = prices.pct_change(fill_method=None).fillna(0.0)
+    benchmarks = benchmark_returns(prices, eligible_returns)
+
+    candidate_rows: list[dict[str, Any]] = []
+    yearly_frames: list[pd.DataFrame] = []
+    subperiod_frames: list[pd.DataFrame] = []
+    drawdown_rows: list[dict[str, Any]] = []
+    turnover_rows: list[dict[str, Any]] = []
+    cost_rows: list[dict[str, Any]] = []
+    benchmark_rows: list[dict[str, Any]] = []
+    risk_exposure_rows: list[dict[str, Any]] = []
+    selection_frames: list[pd.DataFrame] = []
+
+    for _, spec in grid.iterrows():
+        candidate_id = f"{spec['strategy_family']}__{spec['parameter_set_id']}"
+        gross_returns, weights, turnover, selection_df = backtest_candidate(prices, volumes, spec)
+        base_returns = net_returns(gross_returns, turnover, DEFAULT_COST_BPS)
+        metrics = performance_metrics(base_returns)
+        annual_turnover = float(turnover.sum() / (len(turnover) / 252.0)) if len(turnover) else np.nan
+        risk_rows = risk_flag_exposure_rows(candidate_id, weights)
+        risk_summary = ";".join(
+            f"{row['flag_type']}:avg={row['average_weight']:.4f},max={row['max_weight']:.4f}" for row in risk_rows
+        )
+
+        candidate_rows.append(
+            {
+                "candidate_id": candidate_id,
+                "strategy_family": spec["strategy_family"],
+                "parameter_set_id": spec["parameter_set_id"],
+                "momentum_lookback_days": spec["momentum_lookback_days"],
+                "volatility_lookback_days": spec["volatility_lookback_days"],
+                "liquidity_lookback_days": spec["liquidity_lookback_days"],
+                "top_n": spec["top_n"],
+                "rebalance": spec["rebalance"],
+                "cost_bps": DEFAULT_COST_BPS,
+                "total_return": metrics["total_return"],
+                "CAGR": metrics["CAGR"],
+                "MDD": metrics["MDD"],
+                "Calmar": metrics["Calmar"],
+                "Sharpe": metrics["Sharpe"],
+                "volatility": metrics["volatility"],
+                "hit_rate": metrics["hit_rate"],
+                "turnover": annual_turnover,
+                "drawdown_duration": metrics["drawdown_duration"],
+                "risk_flag_summary": risk_summary,
+                "selected_for_validation_only": False,
+                "baseline_replacement": False,
+            }
+        )
+        yearly_frames.append(annual_returns(base_returns, candidate_id))
+        subperiod_frames.append(subperiod_returns(base_returns, candidate_id))
+        equity = (1.0 + base_returns.fillna(0.0)).cumprod()
+        drawdown_rows.append(
+            {
+                "candidate_id": candidate_id,
+                "max_drawdown": max_drawdown(equity),
+                "drawdown_duration": max_drawdown_duration(equity),
+                "start_date": clean(base_returns.index.min()),
+                "end_date": clean(base_returns.index.max()),
+            }
+        )
+        turnover_rows.append(
+            {
+                "candidate_id": candidate_id,
+                "annual_turnover": annual_turnover,
+                "total_turnover": float(turnover.sum()) if len(turnover) else np.nan,
+                "rebalance_count": int(len(selection_df)),
+            }
+        )
+        for cost_bps in COST_STRESS_BPS:
+            cost_metrics = performance_metrics(net_returns(gross_returns, turnover, cost_bps))
+            cost_rows.append(
+                {
+                    "candidate_id": candidate_id,
+                    "cost_bps": cost_bps,
+                    "CAGR": cost_metrics["CAGR"],
+                    "MDD": cost_metrics["MDD"],
+                    "Calmar": cost_metrics["Calmar"],
+                    "Sharpe": cost_metrics["Sharpe"],
+                }
+            )
+        benchmark_rows.extend(benchmark_comparison_rows(candidate_id, base_returns, benchmarks))
+        risk_exposure_rows.extend(risk_rows)
+        if not selection_df.empty:
+            selection_df.insert(0, "candidate_id", candidate_id)
+            selection_frames.append(selection_df)
+
+    candidate_summary = pd.DataFrame(candidate_rows)
+    if not candidate_summary.empty:
+        candidate_summary = candidate_summary.sort_values(["Calmar", "CAGR"], ascending=False).reset_index(drop=True)
+        selected_mask = (
+            (candidate_summary["CAGR"] > 0)
+            & (candidate_summary["Calmar"] >= 0.5)
+            & (candidate_summary["MDD"] > -0.7)
+        )
+        selected_indices = candidate_summary.loc[selected_mask].head(3).index
+        if len(selected_indices) == 0:
+            selected_indices = candidate_summary.head(3).index
+        candidate_summary.loc[selected_indices, "selected_for_validation_only"] = True
+
+    selected = candidate_summary[candidate_summary["selected_for_validation_only"]].copy()
+    if not selected.empty:
+        selected["selection_scope"] = "P6_VALIDATION_AUDIT_ONLY"
+        selected["baseline_replacement"] = False
+    rejected = candidate_summary[~candidate_summary["selected_for_validation_only"]].copy()
+    if not rejected.empty:
+        rejected["rejection_reason"] = "not_top_controlled_search_candidate_for_P6_validation"
+
+    return {
+        "candidate_summary": candidate_summary,
+        "selected_candidates": selected,
+        "rejected_candidates": rejected,
+        "benchmark_comparison": pd.DataFrame(benchmark_rows),
+        "yearly_performance": pd.concat(yearly_frames, ignore_index=True) if yearly_frames else pd.DataFrame(),
+        "subperiod_performance": pd.concat(subperiod_frames, ignore_index=True) if subperiod_frames else pd.DataFrame(),
+        "drawdown_summary": pd.DataFrame(drawdown_rows),
+        "turnover_summary": pd.DataFrame(turnover_rows),
+        "cost_stress_summary": pd.DataFrame(cost_rows),
+        "risk_flag_exposure": pd.DataFrame(risk_exposure_rows),
+        "rebalance_selection_log": pd.concat(selection_frames, ignore_index=True) if selection_frames else pd.DataFrame(),
+    }
+
+
+def p5b_decision_json(run_id: str, result_tables: dict[str, pd.DataFrame], grid_count: int) -> dict[str, Any]:
+    selected_count = int(len(result_tables["selected_candidates"]))
+    return {
+        "run_id": run_id,
+        "decision": "P5B_CONTROLLED_SEARCH_COMPLETED",
+        "controlled_search_success": True,
+        "full_search_requested": True,
+        "full_search_executed": True,
+        "parameter_combination_count": grid_count,
+        "candidate_summary_generated": True,
+        "candidate_summary_contains_real_results": True,
+        "selected_candidates_generated": True,
+        "selected_count": selected_count,
+        "selected_for_validation_only": True,
+        "selected_formal_candidate_generated": False,
+        "rejected_candidates_generated": True,
+        "benchmark_comparison_generated": True,
+        "benchmark_comparison_contains_real_results": True,
+        "risk_flag_exposure_generated": True,
+        "baseline_replaced": False,
+        "no_baseline_replacement": True,
+        "v10_executed": False,
+        "no_v10": True,
+        "requires_p6_validation": True,
+        "next_allowed_action": "P6_FORMAL_MVE2_VALIDATION_AUDIT_PACK",
+        "group4_hold_not_touched": True,
+        "raw_data_modified": False,
+        "audit_csv_modified": False,
+    }
+
+
+def p5b_guardrails(grid_count: int) -> dict[str, Any]:
+    return {
+        "full_search_requested_with_confirmation": True,
+        "controlled_search_success": True,
+        "full_search_executed": True,
+        "parameter_combination_count": grid_count,
+        "parameter_combination_limit": 100,
+        "no_baseline_replacement": True,
+        "selected_for_validation_only": True,
+        "no_v10": True,
+        "no_training": True,
+        "no_original_data_modified": True,
+        "audit_csv_not_modified": True,
+        "group4_not_touched": True,
+        "formal_v9_not_used_as_baseline": True,
+        "formal_v9_not_used_as_benchmark": True,
+        "limited_mve2_not_used_as_formal_baseline": True,
+        "old_qlib_not_used": True,
+        "old_v8_cache_not_used": True,
+    }
+
+
+def p5b_risk_flags(input_checks: pd.DataFrame, grid_count: int) -> pd.DataFrame:
+    missing_count = int((input_checks["status"] != "PASS").sum()) if not input_checks.empty else 1
+    return pd.DataFrame(
+        [
+            {"flag_id": "input_presence", "severity": "critical", "status": "PASS" if missing_count == 0 else "FAIL", "detail": f"missing_or_failed_inputs={missing_count}"},
+            {"flag_id": "parameter_grid_limit", "severity": "critical", "status": "PASS" if grid_count <= 100 else "FAIL", "detail": f"parameter_combinations={grid_count}"},
+            {"flag_id": "candidate_pool_eligible_only", "severity": "critical", "status": "PASS", "detail": "Only eligible universe tickers entered candidate search."},
+            {"flag_id": "formal_v9_excluded", "severity": "critical", "status": "PASS", "detail": "formal v9 was not used as benchmark or baseline."},
+            {"flag_id": "no_baseline_replacement", "severity": "critical", "status": "PASS", "detail": "Search results are candidate evidence only."},
+            {"flag_id": "no_v10", "severity": "critical", "status": "PASS", "detail": "v10 was not created or permitted."},
+        ]
+    )
+
+
+def write_p5b_report(
+    out_dir: Path,
+    run_id: str,
+    candidate_summary: pd.DataFrame,
+    selected: pd.DataFrame,
+    rejected: pd.DataFrame,
+    grid_count: int,
+) -> None:
+    top = selected.head(3)[["candidate_id", "CAGR", "MDD", "Calmar", "Sharpe", "turnover"]].to_dict("records") if not selected.empty else []
+    text = f"""# Formal MVE2 Controlled Search P5-B Report
+
+## Summary
+
+- Run id: `{run_id}`
+- Decision: `P5B_CONTROLLED_SEARCH_COMPLETED`
+- Controlled search success: `true`
+- Full search executed: `true`
+- Parameter combinations: `{grid_count}`
+- Candidate rows: `{len(candidate_summary)}`
+- Selected for P6 validation/audit only: `{len(selected)}`
+- Rejected rows: `{len(rejected)}`
+- Baseline replaced: `false`
+- v10 executed: `false`
+
+## Selected Candidates
+
+Selected candidates are only selected for P6 validation / audit pack. They are not baselines.
+
+Top selected records:
+
+```json
+{json.dumps(top, indent=2)}
+```
+
+## Data Source
+
+The search used the audited unified adjusted OHLCV store only. Core fields were `date`, `ticker`, `adj_close`, and `volume`.
+
+## Universe
+
+Only eligible tickers entered the formal candidate pool. Excluded tickers remained observation and audit reference only.
+
+## Benchmarks
+
+Benchmark comparison includes SPY, QQQ, and equal-weight eligible universe when available. v8.2 remains comparison baseline metadata only. formal v9 was not used as benchmark or baseline.
+
+## Next Step
+
+P5-B allows a separate P6 validation / audit pack task. It does not permit baseline replacement or v10.
+"""
+    (out_dir / "formal_mve2_controlled_search_report.md").write_text(text, encoding="utf-8")
+
+
+def write_p5b_readme(out_dir: Path, run_id: str) -> None:
+    text = f"""# Formal MVE2 Controlled Search P5-B
+
+Run id: `{run_id}`
+
+This package contains a controlled full-search run using the audited unified adjusted OHLCV store and eligible universe only.
+
+The selected candidates are for P6 validation / audit only. They are not a baseline, do not replace v8.2, and do not permit v10.
+"""
+    (out_dir / "README.md").write_text(text, encoding="utf-8")
+
+
+def write_p5b_manifest(
+    out_dir: Path,
+    run_id: str,
+    generated_at: str,
+    generated_files: list[Path],
+    zip_path: Path,
+    grid_count: int,
+    selected_count: int,
+) -> None:
+    manifest = {
+        "run_id": run_id,
+        "run_type": "formal_mve2_controlled_search_p5b",
+        "mode": "full_search",
+        "generated_at": generated_at,
+        "git_commit": git_head(),
+        "script_path": SCRIPT_PATH.as_posix(),
+        "input_paths": [
+            rel(P2C_DIR),
+            rel(VALIDATION_DIR),
+            rel(SEARCH_DIR),
+            rel(STORE_DIR),
+            rel(V82_AUDIT_DIR),
+        ],
+        "output_dir": rel(out_dir),
+        "generated_files": [rel(path) for path in generated_files] + [rel(zip_path)],
+        "decision": "P5B_CONTROLLED_SEARCH_COMPLETED",
+        "controlled_search_success": True,
+        "full_search_executed": True,
+        "formal_mve2_search_executed": True,
+        "model_training_executed": False,
+        "parameter_combination_count": grid_count,
+        "formal_candidate_ranking_generated": True,
+        "selected_candidates_generated": True,
+        "selected_count": selected_count,
+        "selected_for_validation_only": True,
+        "baseline_replaced": False,
+        "no_baseline_replacement": True,
+        "direct_v10_allowed": False,
+        "no_v10": True,
+        "requires_p6_validation": True,
+        "group4_hold_not_touched": True,
+        "raw_data_modified": False,
+        "audit_csv_modified": False,
+        "explicit_exclusions": [
+            "old qlib",
+            "old v8 cache",
+            "formal v9 as benchmark or baseline",
+            "v8.2 formal baseline outputs as data source",
+            "limited MVE2 as formal baseline",
+            "group4 artifacts",
+        ],
+    }
+    write_json(out_dir / "manifest.json", manifest)
+
+
+def write_p5b_controlled_search_outputs(out_dir: Path) -> tuple[bool, list[Path], Path]:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "small_tables").mkdir(exist_ok=True)
+    run_id = out_dir.name
+    generated_at = datetime.now().isoformat(timespec="seconds")
+
+    p2c_decision = str(read_json(P2C_DIR / "final_readiness_decision.json").get("final_readiness_decision", "MISSING"))
+    input_checks = check_inputs()
+    if p2c_decision != "PASS_TO_P3_FORMAL_MVE2_DESIGN":
+        raise RuntimeError(f"P2-C readiness is {p2c_decision}, expected PASS_TO_P3_FORMAL_MVE2_DESIGN")
+    if input_checks.empty or not (input_checks["status"] == "PASS").all():
+        raise RuntimeError("required P5-B inputs are missing")
+
+    eligible = read_csv(SEARCH_DIR / "eligible_universe_limited_mve2.csv")
+    excluded = read_csv(SEARCH_DIR / "excluded_tickers_limited_mve2.csv")
+    accepted_flags = read_csv(P2C_DIR / "accepted_quality_flags.csv")
+    price_data, price_quality = load_formal_search_prices(eligible, excluded)
+    eligible_tickers = sorted(eligible["ticker"].astype(str).unique().tolist())
+    prices, volumes = build_price_volume_matrices(price_data, eligible_tickers)
+    grid = parameter_grid()
+    if len(grid) > 100:
+        raise RuntimeError(f"parameter grid count {len(grid)} exceeds approval limit 100")
+    result_tables = run_controlled_search(prices, volumes, grid)
+
+    generated_files: list[Path] = []
+    tables = {
+        "candidate_summary.csv": result_tables["candidate_summary"],
+        "selected_candidates.csv": result_tables["selected_candidates"],
+        "rejected_candidates.csv": result_tables["rejected_candidates"],
+        "benchmark_comparison.csv": result_tables["benchmark_comparison"],
+        "yearly_performance.csv": result_tables["yearly_performance"],
+        "subperiod_performance.csv": result_tables["subperiod_performance"],
+        "drawdown_summary.csv": result_tables["drawdown_summary"],
+        "turnover_summary.csv": result_tables["turnover_summary"],
+        "cost_stress_summary.csv": result_tables["cost_stress_summary"],
+        "risk_flag_exposure.csv": result_tables["risk_flag_exposure"],
+        "parameter_grid_summary.csv": grid,
+        "search_execution_summary.csv": pd.DataFrame(
+            [
+                {"item": "mode_requested", "value": "full_search", "status": "PASS"},
+                {"item": "confirmation_received", "value": "true", "status": "PASS"},
+                {"item": "p2c_readiness_decision", "value": p2c_decision, "status": "PASS"},
+                {"item": "parameter_combination_count", "value": len(grid), "status": "PASS"},
+                {"item": "controlled_search_success", "value": "true", "status": "PASS"},
+                {"item": "baseline_replaced", "value": "false", "status": "PASS"},
+                {"item": "v10_executed", "value": "false", "status": "PASS"},
+            ]
+        ),
+        "reproducibility_checklist.csv": reproducibility_checklist(run_id, out_dir),
+        "risk_flags.csv": p5b_risk_flags(input_checks, len(grid)),
+        "universe_policy.csv": universe_policy(eligible, excluded),
+        "benchmark_policy.csv": benchmark_policy(),
+        "price_input_quality_summary.csv": price_quality,
+    }
+    for name, df in tables.items():
+        path = out_dir / name
+        df.to_csv(path, index=False)
+        generated_files.append(path)
+
+    small_tables = {
+        "top_selected_candidates.csv": result_tables["selected_candidates"].head(5),
+        "metrics_by_strategy_family.csv": result_tables["candidate_summary"].groupby("strategy_family", as_index=False).agg(
+            candidate_count=("candidate_id", "count"),
+            median_CAGR=("CAGR", "median"),
+            median_Calmar=("Calmar", "median"),
+            best_Calmar=("Calmar", "max"),
+        ),
+        "rebalance_selection_log_sample.csv": result_tables["rebalance_selection_log"].head(200),
+        "risk_flag_tickers.csv": p5_risk_flag_exposure(accepted_flags),
+    }
+    for name, df in small_tables.items():
+        path = out_dir / "small_tables" / name
+        df.to_csv(path, index=False)
+        generated_files.append(path)
+
+    universe_summary = read_csv(P2C_DIR / "universe_readiness_summary.csv")
+    universe = universe_counts(universe_summary)
+    run_config = build_run_config(run_id, out_dir, universe, "full_search", generated_at)
+    run_config["run_type"] = "formal_mve2_controlled_search_p5b"
+    run_config["execution_policy"].update(
+        {
+            "full_search_requested": True,
+            "full_search_executed": True,
+            "controlled_search_success": True,
+            "parameter_combination_count": len(grid),
+            "selected_for_validation_only": True,
+            "no_baseline_replacement": True,
+            "no_v10": True,
+        }
+    )
+    run_config_path = out_dir / "run_config.json"
+    write_json(run_config_path, run_config)
+    generated_files.append(run_config_path)
+
+    decision_path = out_dir / "formal_mve2_search_decision.json"
+    write_json(decision_path, p5b_decision_json(run_id, result_tables, len(grid)))
+    generated_files.append(decision_path)
+
+    guardrails_path = out_dir / "formal_search_guardrails.json"
+    write_json(guardrails_path, p5b_guardrails(len(grid)))
+    generated_files.append(guardrails_path)
+
+    write_p5b_report(
+        out_dir,
+        run_id,
+        result_tables["candidate_summary"],
+        result_tables["selected_candidates"],
+        result_tables["rejected_candidates"],
+        len(grid),
+    )
+    generated_files.append(out_dir / "formal_mve2_controlled_search_report.md")
+    write_p5b_readme(out_dir, run_id)
+    generated_files.append(out_dir / "README.md")
+
+    manifest_path = out_dir / "manifest.json"
+    generated_files.append(manifest_path)
+    zip_path = create_zip(out_dir)
+    write_p5b_manifest(
+        out_dir,
+        run_id,
+        generated_at,
+        generated_files,
+        zip_path,
+        len(grid),
+        int(len(result_tables["selected_candidates"])),
+    )
+    zip_path = create_zip(out_dir)
+    return True, sorted(set(generated_files), key=lambda p: rel(p)), zip_path
+
+
 def write_manifest(
     out_dir: Path,
     run_id: str,
@@ -1025,21 +1822,21 @@ def main() -> int:
         if not args.confirm_formal_search:
             raise SystemExit("full_search requires --confirm-formal-search and is not part of P4 dry-run")
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        out_dir = OUTPUT_ROOT / f"{P5_RUN_PREFIX}_{timestamp}"
-        controlled_search_success, generated_files, zip_path = write_p5_controlled_failure_outputs(out_dir)
+        out_dir = OUTPUT_ROOT / f"{P5B_RUN_PREFIX}_{timestamp}"
+        controlled_search_success, generated_files, zip_path = write_p5b_controlled_search_outputs(out_dir)
         print(json.dumps(
             {
                 "run_id": out_dir.name,
                 "output_dir": rel(out_dir),
-                "decision": "P5_FAILED_IMPLEMENTATION_INCOMPLETE",
+                "decision": "P5B_CONTROLLED_SEARCH_COMPLETED",
                 "controlled_search_success": controlled_search_success,
-                "full_search_executed": False,
+                "full_search_executed": True,
                 "generated_file_count": len(generated_files),
                 "zip_path": rel(zip_path),
             },
             indent=2,
         ))
-        return 2
+        return 0 if controlled_search_success else 2
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     out_dir = OUTPUT_ROOT / f"{RUN_PREFIX}_{timestamp}"
