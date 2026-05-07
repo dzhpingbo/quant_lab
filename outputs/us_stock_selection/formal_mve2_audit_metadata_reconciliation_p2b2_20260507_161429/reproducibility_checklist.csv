@@ -1,0 +1,13 @@
+item,status,value
+script_path,PASS,scripts/us_stock_selection/55_reconcile_formal_mve2_audit_metadata_conflict.py
+git_commit,PASS,2ac2b58cf2de378592c9ad18c2af08779d66391c
+p2a_output_dir,PASS,outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224
+p2b_output_dir,PASS,outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856
+store_dir,PASS,data/unified_ohlcv/us_stock_selection
+raw_data_modified,PASS,false
+audit_csv_modified,PASS,false
+group4_hold_not_touched,PASS,true
+strategy_search_executed,PASS,false
+model_training_executed,PASS,false
+formal_mve2_executed,PASS,false
+v10_executed,PASS,false

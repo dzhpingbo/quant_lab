@@ -1,0 +1,7 @@
+flag_id,severity,status,affected_count,detail
+parquet_entity_readability,critical,PASS,0,Readable parquet files with required fields are required.
+stale_price_quality_audit_metadata,warning,RECONCILED,51,price_quality audit rows reflect stale failed refresh metadata.
+audit_row_count_mismatch,warning,RECONCILED,51,Audit row counts are stale relative to parquet row counts.
+store_manifest_row_count_match,info,PASS,51,store_file_manifest row counts match parquet row counts.
+audit_success_flag_mismatch,warning,RECONCILED,51,Audit success flags are stale relative to readable parquet files.
+reconciliation_decision,info,PASS_TO_P2C_GATE_RECHECK,0,P2-B2 reconciliation decision.

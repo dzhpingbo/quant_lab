@@ -1,0 +1,8 @@
+impact_area,impact,rationale
+data_readability,NO_BLOCK,All price parquet files are readable with required fields.
+ticker_universe_reproducibility,NO_BLOCK,"Universe evidence is held in limited MVE2 eligible/excluded files, not in price_quality audit success flags."
+eligible_excluded_reproducibility,NO_BLOCK,Eligible/excluded CSV files remain readable and are not changed by this task.
+formal_mve2_data_source_uniqueness,NO_BLOCK,Only audited unified adjusted OHLCV store and limited MVE2 evidence were read.
+p2a_readiness,EXPLAINS_CONDITIONAL,51 metadata rows are attributable to stale audit metadata rather than unreadable parquet.
+p2c_gate_recheck,ALLOW,P2-C can recheck using parquet-derived reconciliation evidence.
+p3_search_design,BLOCK_UNTIL_P2C_PASS,P3 remains forbidden until P2-C gate recheck passes and human review accepts known exceptions.

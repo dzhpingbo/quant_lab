@@ -1,0 +1,4 @@
+scope,field_name,observed_value,pack_repository_commit,expected_value,explanation,severity,whether_blocks_p2c,whether_blocks_p3
+limited_validation_pack,pack_generated_from_commit,0ddd8bb8cc6772d6d6bb6fa098bd4795808fa7a9,2ac2b58cf2de378592c9ad18c2af08779d66391c,Generated-output commit may predate the repository commit that stores it.,"This is a provenance timing difference, not a data-content mismatch.",INFO,False,False
+p2a_gate,source_git_commit,b311cbba3ee2f205044b38402d5b90d83653bf10,2ac2b58cf2de378592c9ad18c2af08779d66391c,Generated-output commit may predate the repository commit that stores it.,"This is a provenance timing difference, not a data-content mismatch.",INFO,False,False
+p2b_exception_review,source_git_commit,02e643593c92e7c0d55f28faa210a181f6454544,2ac2b58cf2de378592c9ad18c2af08779d66391c,Generated-output commit may predate the repository commit that stores it.,"This is a provenance timing difference, not a data-content mismatch.",INFO,False,False

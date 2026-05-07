@@ -1,0 +1,12 @@
+metric,value
+reconciliation_decision,PASS_TO_P2C_GATE_RECHECK
+can_enter_p2c_gate_recheck,True
+can_enter_p3_formal_search_design,False
+direct_v10_allowed,False
+ticker_count,51
+parquet_readable_count,51
+required_fields_present_count,51
+audit_row_count_mismatch_count,51
+manifest_row_count_match_count,51
+audit_success_flag_mismatch_count,51
+stale_audit_metadata_count,51

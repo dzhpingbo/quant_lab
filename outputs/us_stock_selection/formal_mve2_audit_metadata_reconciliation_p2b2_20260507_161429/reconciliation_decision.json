@@ -1,0 +1,21 @@
+{
+  "run_id": "formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429",
+  "p2a_run_id": "formal_mve2_data_quality_gate_20260507_142224",
+  "p2b_run_id": "formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856",
+  "reconciliation_decision": "PASS_TO_P2C_GATE_RECHECK",
+  "can_enter_p2c_gate_recheck": true,
+  "can_enter_p3_formal_mve2_search_design": false,
+  "direct_v10_allowed": false,
+  "reasons": [
+    "stale_audit_metadata_rows=51",
+    "parquet files are readable and store manifest row counts reconcile with parquet row counts.",
+    "P3 remains blocked until P2-C passes."
+  ],
+  "group4_hold_not_touched": true,
+  "raw_data_modified": false,
+  "audit_csv_modified": false,
+  "strategy_search_executed": false,
+  "model_training_executed": false,
+  "formal_mve2_executed": false,
+  "v10_executed": false
+}

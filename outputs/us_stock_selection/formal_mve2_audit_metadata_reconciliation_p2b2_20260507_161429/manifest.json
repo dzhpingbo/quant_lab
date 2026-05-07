@@ -1,0 +1,47 @@
+{
+  "run_id": "formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429",
+  "run_type": "formal_mve2_audit_metadata_reconciliation_p2b2",
+  "generated_at": "2026-05-07T16:14:30",
+  "git_commit": "2ac2b58cf2de378592c9ad18c2af08779d66391c",
+  "script_path": "scripts/us_stock_selection/55_reconcile_formal_mve2_audit_metadata_conflict.py",
+  "input_paths": [
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_p2b_exceptions_20260507_151856",
+    "data/unified_ohlcv/us_stock_selection",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555"
+  ],
+  "output_dir": "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429",
+  "generated_files": [
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/README.md",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/manifest.json",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/p2b2_audit_metadata_reconciliation_report.md",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/metadata_conflict_reconciliation_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/audit_csv_vs_parquet_detail.csv",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/parquet_readability_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/row_count_reconciliation.csv",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/success_flag_reconciliation.csv",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/file_size_mtime_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/evidence_chain_impact_assessment.csv",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/reconciliation_decision.json",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/reproducibility_checklist.csv",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/risk_flags.csv",
+    "outputs/us_stock_selection/formal_mve2_audit_metadata_reconciliation_p2b2_20260507_161429/small_tables"
+  ],
+  "explicit_exclusions": [
+    "old qlib",
+    "old v8 cache",
+    "formal v9 output",
+    "v8.2 formal baseline output"
+  ],
+  "reconciliation_decision": "PASS_TO_P2C_GATE_RECHECK",
+  "can_enter_p2c_gate_recheck": true,
+  "can_enter_p3_formal_mve2_search_design": false,
+  "direct_v10_allowed": false,
+  "group4_hold_not_touched": true,
+  "raw_data_modified": false,
+  "audit_csv_modified": false,
+  "strategy_search_executed": false,
+  "model_training_executed": false,
+  "formal_mve2_executed": false,
+  "v10_executed": false
+}
