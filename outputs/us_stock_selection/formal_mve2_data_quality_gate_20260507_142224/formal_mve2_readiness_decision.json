@@ -1,0 +1,16 @@
+{
+  "run_id": "formal_mve2_data_quality_gate_20260507_142224",
+  "readiness_decision": "CONDITIONAL_NEEDS_REVIEW",
+  "can_enter_p3_formal_mve2_search_design": false,
+  "direct_v10_allowed": false,
+  "reasons": [
+    "non_positive_volume: 6 affected",
+    "large_daily_price_jump: 7 affected",
+    "audit_metadata_conflict: 51 affected"
+  ],
+  "group4_hold_not_touched": true,
+  "strategy_search_executed": false,
+  "model_training_executed": false,
+  "formal_mve2_executed": false,
+  "v10_executed": false
+}

@@ -1,0 +1,7 @@
+check,status,detail
+data_source_unique,PASS,Only audited unified adjusted OHLCV store plus limited MVE2 outputs are used.
+required_fields,PASS,"date, ticker, adj_close, volume checked."
+universe_reproducibility,SEE_RISK_FLAGS,Eligible and excluded CSV files are present and summarized.
+risk_flag_count,INFO,critical_fail=0; warnings=3
+readiness_decision,CONDITIONAL_NEEDS_REVIEW,P2-A gate decision.
+direct_v10,FORBIDDEN,This gate does not authorize v10.

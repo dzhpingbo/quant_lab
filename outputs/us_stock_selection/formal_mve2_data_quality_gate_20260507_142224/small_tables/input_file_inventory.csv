@@ -1,0 +1,71 @@
+path,role,exists,size_bytes,mtime
+data/unified_ohlcv/us_stock_selection,audited store root,True,0,2026-05-02T08:12:06
+data/unified_ohlcv/us_stock_selection/prices,price parquet directory,True,16384,2026-05-02T10:37:48
+data/unified_ohlcv/us_stock_selection/audit,store audit directory,True,4096,2026-05-02T10:39:57
+outputs/us_stock_selection/limited_mve2_20260502_142702/limited_mve2_run_config.json,limited search config,True,576,2026-05-02T14:27:40
+outputs/us_stock_selection/limited_mve2_20260502_142702/eligible_universe_limited_mve2.csv,eligible universe,True,5980,2026-05-02T14:27:02
+outputs/us_stock_selection/limited_mve2_20260502_142702/excluded_tickers_limited_mve2.csv,excluded universe,True,1370,2026-05-02T14:27:02
+outputs/us_stock_selection/limited_mve2_validation_20260502_183555/manifest.json,validation pack manifest,True,3073,2026-05-07T14:04:24
+outputs/us_stock_selection/limited_mve2_validation_20260502_183555/key_metrics_summary.csv,validation key metrics,True,4500,2026-05-07T14:04:24
+outputs/us_stock_selection/limited_mve2_validation_20260502_183555/selected_report.md,validation selected report,True,1504,2026-05-07T14:04:24
+data/unified_ohlcv/us_stock_selection/prices/AAPL.parquet,price parquet,True,496632,2026-05-02T10:36:52
+data/unified_ohlcv/us_stock_selection/prices/ADBE.parquet,price parquet,True,430898,2026-05-02T10:36:54
+data/unified_ohlcv/us_stock_selection/prices/AFRM.parquet,price parquet,True,73673,2026-05-02T10:37:35
+data/unified_ohlcv/us_stock_selection/prices/AMD.parquet,price parquet,True,404842,2026-05-02T10:36:56
+data/unified_ohlcv/us_stock_selection/prices/AMZN.parquet,price parquet,True,376966,2026-05-02T10:36:57
+data/unified_ohlcv/us_stock_selection/prices/ARKK.parquet,price parquet,True,141717,2026-05-02T10:37:19
+data/unified_ohlcv/us_stock_selection/prices/AVGO.parquet,price parquet,True,220269,2026-05-02T10:36:58
+data/unified_ohlcv/us_stock_selection/prices/CIBR.parquet,price parquet,True,133287,2026-05-02T10:37:20
+data/unified_ohlcv/us_stock_selection/prices/COIN.parquet,price parquet,True,71923,2026-05-02T10:37:36
+data/unified_ohlcv/us_stock_selection/prices/CRM.parquet,price parquet,True,283493,2026-05-02T10:36:59
+data/unified_ohlcv/us_stock_selection/prices/CRWD.parquet,price parquet,True,94744,2026-05-02T10:37:00
+data/unified_ohlcv/us_stock_selection/prices/DIA.parquet,price parquet,True,350647,2026-05-02T10:37:14
+data/unified_ohlcv/us_stock_selection/prices/GLD.parquet,price parquet,True,263913,2026-05-02T10:37:41
+data/unified_ohlcv/us_stock_selection/prices/GOOGL.parquet,price parquet,True,295183,2026-05-02T10:37:01
+data/unified_ohlcv/us_stock_selection/prices/IBB.parquet,price parquet,True,306586,2026-05-02T10:37:21
+data/unified_ohlcv/us_stock_selection/prices/IGV.parquet,price parquet,True,294212,2026-05-02T10:37:23
+data/unified_ohlcv/us_stock_selection/prices/INTC.parquet,price parquet,True,445316,2026-05-02T10:37:42
+data/unified_ohlcv/us_stock_selection/prices/IWM.parquet,price parquet,True,326599,2026-05-02T10:37:16
+data/unified_ohlcv/us_stock_selection/prices/LCID.parquet,price parquet,True,67899,2026-05-02T10:37:37
+data/unified_ohlcv/us_stock_selection/prices/META.parquet,price parquet,True,186451,2026-05-02T10:37:02
+data/unified_ohlcv/us_stock_selection/prices/MSFT.parquet,price parquet,True,440898,2026-05-02T10:37:03
+data/unified_ohlcv/us_stock_selection/prices/MSTR.parquet,price parquet,True,331395,2026-05-02T10:37:38
+data/unified_ohlcv/us_stock_selection/prices/MU.parquet,price parquet,True,405612,2026-05-02T10:37:44
+data/unified_ohlcv/us_stock_selection/prices/NET.parquet,price parquet,True,90286,2026-05-02T10:37:04
+data/unified_ohlcv/us_stock_selection/prices/NFLX.parquet,price parquet,True,316292,2026-05-02T10:37:05
+data/unified_ohlcv/us_stock_selection/prices/NOW.parquet,price parquet,True,183221,2026-05-02T10:37:06
+data/unified_ohlcv/us_stock_selection/prices/NVDA.parquet,price parquet,True,336534,2026-05-02T10:37:08
+data/unified_ohlcv/us_stock_selection/prices/ORCL.parquet,price parquet,True,423581,2026-05-02T10:37:09
+data/unified_ohlcv/us_stock_selection/prices/PANW.parquet,price parquet,True,182134,2026-05-02T10:37:45
+data/unified_ohlcv/us_stock_selection/prices/PLTR.parquet,price parquet,True,75266,2026-05-02T10:37:10
+data/unified_ohlcv/us_stock_selection/prices/QLD.parquet,price parquet,True,264059,2026-05-02T10:37:30
+data/unified_ohlcv/us_stock_selection/prices/QQQ.parquet,price parquet,True,340409,2026-05-02T10:37:17
+data/unified_ohlcv/us_stock_selection/prices/RIVN.parquet,price parquet,True,59047,2026-05-02T10:37:38
+data/unified_ohlcv/us_stock_selection/prices/ROKU.parquet,price parquet,True,115073,2026-05-02T10:37:39
+data/unified_ohlcv/us_stock_selection/prices/SHOP.parquet,price parquet,True,149261,2026-05-02T10:37:11
+data/unified_ohlcv/us_stock_selection/prices/SHY.parquet,price parquet,True,178860,2026-05-02T10:37:46
+data/unified_ohlcv/us_stock_selection/prices/SKYY.parquet,price parquet,True,174806,2026-05-02T10:37:24
+data/unified_ohlcv/us_stock_selection/prices/SMH.parquet,price parquet,True,303066,2026-05-02T10:37:25
+data/unified_ohlcv/us_stock_selection/prices/SNOW.parquet,price parquet,True,77487,2026-05-02T10:37:12
+data/unified_ohlcv/us_stock_selection/prices/SOXL.parquet,price parquet,True,211916,2026-05-02T10:37:31
+data/unified_ohlcv/us_stock_selection/prices/SOXX.parquet,price parquet,True,300851,2026-05-02T10:37:26
+data/unified_ohlcv/us_stock_selection/prices/SPY.parquet,price parquet,True,410181,2026-05-02T10:37:18
+data/unified_ohlcv/us_stock_selection/prices/SSO.parquet,price parquet,True,263352,2026-05-02T10:37:33
+data/unified_ohlcv/us_stock_selection/prices/TLT.parquet,price parquet,True,265766,2026-05-02T10:37:47
+data/unified_ohlcv/us_stock_selection/prices/TQQQ.parquet,price parquet,True,217468,2026-05-02T10:37:34
+data/unified_ohlcv/us_stock_selection/prices/TSLA.parquet,price parquet,True,210617,2026-05-02T10:37:12
+data/unified_ohlcv/us_stock_selection/prices/UBER.parquet,price parquet,True,92023,2026-05-02T10:37:48
+data/unified_ohlcv/us_stock_selection/prices/UPRO.parquet,price parquet,True,225454,2026-05-02T10:37:35
+data/unified_ohlcv/us_stock_selection/prices/UPST.parquet,price parquet,True,74615,2026-05-02T10:37:40
+data/unified_ohlcv/us_stock_selection/prices/XBI.parquet,price parquet,True,251887,2026-05-02T10:37:28
+data/unified_ohlcv/us_stock_selection/prices/XLK.parquet,price parquet,True,312791,2026-05-02T10:37:29
+data/unified_ohlcv/us_stock_selection/audit/changed_readiness_vs_previous_audit.csv,store audit csv,True,4022,2026-05-02T10:45:35
+data/unified_ohlcv/us_stock_selection/audit/corporate_action_audit.csv,store audit csv,True,3191,2026-05-02T13:57:52
+data/unified_ohlcv/us_stock_selection/audit/download_audit.csv,store audit csv,True,7547,2026-05-02T13:57:52
+data/unified_ohlcv/us_stock_selection/audit/layer_readiness_after_unified_store.csv,store audit csv,True,690,2026-05-02T10:45:35
+data/unified_ohlcv/us_stock_selection/audit/mve1_feature_build_readiness_after_unified_store.csv,store audit csv,True,7106,2026-05-02T10:45:35
+data/unified_ohlcv/us_stock_selection/audit/not_ready_ticker_reason_after_unified_store.csv,store audit csv,True,1088,2026-05-02T10:45:35
+data/unified_ohlcv/us_stock_selection/audit/price_quality_audit.csv,store audit csv,True,9978,2026-05-02T13:57:52
+data/unified_ohlcv/us_stock_selection/audit/split_sanity_audit.csv,store audit csv,True,1733,2026-05-02T13:57:52
+data/unified_ohlcv/us_stock_selection/audit/store_file_manifest.csv,store audit csv,True,10605,2026-05-02T10:37:48
+data/unified_ohlcv/us_stock_selection/audit/ticker_readiness_after_unified_store.csv,store audit csv,True,6909,2026-05-02T13:57:52

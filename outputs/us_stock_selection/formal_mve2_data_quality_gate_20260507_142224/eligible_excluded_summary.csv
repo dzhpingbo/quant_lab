@@ -1,0 +1,52 @@
+ticker,universe_status,layer,bucket,reason,price_file_exists,rows,first_date,last_date
+AAPL,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,11438,1980-12-12,2026-05-01
+ADBE,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,10006,1986-08-13,2026-05-01
+AMD,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,11626,1980-03-17,2026-05-01
+AMZN,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,7286,1997-05-15,2026-05-01
+AVGO,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,4210,2009-08-06,2026-05-01
+CRM,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,5500,2004-06-23,2026-05-01
+GOOGL,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,5460,2004-08-19,2026-05-01
+META,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,3508,2012-05-18,2026-05-01
+MSFT,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,10112,1986-03-13,2026-05-01
+NFLX,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,6024,2002-05-23,2026-05-01
+NOW,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,3479,2012-06-29,2026-05-01
+NVDA,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,6861,1999-01-22,2026-05-01
+ORCL,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,10113,1986-03-12,2026-05-01
+SHOP,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,2754,2015-05-20,2026-05-01
+TSLA,eligible,Layer 1 - Mega-cap tech / core technology,Layer1 Mega-cap / core equity,ready_10y_plus_unified_adj_close_volume,True,3985,2010-06-29,2026-05-01
+DIA,eligible,Layer 2 - Core index ETF,Layer2 Core ETF,ready_10y_plus_unified_adj_close_volume,True,7115,1998-01-20,2026-05-01
+IWM,eligible,Layer 2 - Core index ETF,Layer2 Core ETF,ready_10y_plus_unified_adj_close_volume,True,6521,2000-05-26,2026-05-01
+QQQ,eligible,Layer 2 - Core index ETF,Layer2 Core ETF,ready_10y_plus_unified_adj_close_volume,True,6829,1999-03-10,2026-05-01
+SPY,eligible,Layer 2 - Core index ETF,Layer2 Core ETF,ready_10y_plus_unified_adj_close_volume,True,8371,1993-01-29,2026-05-01
+ARKK,eligible,Layer 3 - Sector / theme ETF,Layer3 Sector/theme ETF,ready_10y_plus_unified_adj_close_volume,True,2891,2014-10-31,2026-05-01
+CIBR,eligible,Layer 3 - Sector / theme ETF,Layer3 Sector/theme ETF,ready_10y_plus_unified_adj_close_volume,True,2722,2015-07-07,2026-05-01
+IBB,eligible,Layer 3 - Sector / theme ETF,Layer3 Sector/theme ETF,ready_10y_plus_unified_adj_close_volume,True,6342,2001-02-12,2026-05-01
+IGV,eligible,Layer 3 - Sector / theme ETF,Layer3 Sector/theme ETF,ready_10y_plus_unified_adj_close_volume,True,6235,2001-07-17,2026-05-01
+SKYY,eligible,Layer 3 - Sector / theme ETF,Layer3 Sector/theme ETF,ready_10y_plus_unified_adj_close_volume,True,3728,2011-07-06,2026-05-01
+SMH,eligible,Layer 3 - Sector / theme ETF,Layer3 Sector/theme ETF,ready_10y_plus_unified_adj_close_volume,True,6516,2000-06-05,2026-05-01
+SOXX,eligible,Layer 3 - Sector / theme ETF,Layer3 Sector/theme ETF,ready_10y_plus_unified_adj_close_volume,True,6237,2001-07-13,2026-05-01
+XBI,eligible,Layer 3 - Sector / theme ETF,Layer3 Sector/theme ETF,ready_10y_plus_unified_adj_close_volume,True,5091,2006-02-06,2026-05-01
+XLK,eligible,Layer 3 - Sector / theme ETF,Layer3 Sector/theme ETF,ready_10y_plus_unified_adj_close_volume,True,6881,1998-12-22,2026-05-01
+QLD,eligible,Layer 4 - Leveraged ETF separate bucket,Layer4 Leveraged ETF,ready_10y_plus_unified_adj_close_volume,True,4997,2006-06-21,2026-05-01
+SOXL,eligible,Layer 4 - Leveraged ETF separate bucket,Layer4 Leveraged ETF,ready_10y_plus_unified_adj_close_volume,True,4061,2010-03-11,2026-05-01
+SSO,eligible,Layer 4 - Leveraged ETF separate bucket,Layer4 Leveraged ETF,ready_10y_plus_unified_adj_close_volume,True,4997,2006-06-21,2026-05-01
+TQQQ,eligible,Layer 4 - Leveraged ETF separate bucket,Layer4 Leveraged ETF,ready_10y_plus_unified_adj_close_volume,True,4080,2010-02-11,2026-05-01
+UPRO,eligible,Layer 4 - Leveraged ETF separate bucket,Layer4 Leveraged ETF,ready_10y_plus_unified_adj_close_volume,True,4239,2009-06-25,2026-05-01
+GLD,eligible,v8_candidate_extension,v8 extension ready subset,ready_10y_plus_unified_adj_close_volume,True,5396,2004-11-18,2026-05-01
+INTC,eligible,v8_candidate_extension,v8 extension ready subset,ready_10y_plus_unified_adj_close_volume,True,11626,1980-03-17,2026-05-01
+MU,eligible,v8_candidate_extension,v8 extension ready subset,ready_10y_plus_unified_adj_close_volume,True,10561,1984-06-01,2026-05-01
+PANW,eligible,v8_candidate_extension,v8 extension ready subset,ready_10y_plus_unified_adj_close_volume,True,3465,2012-07-20,2026-05-01
+SHY,eligible,v8_candidate_extension,v8 extension ready subset,ready_10y_plus_unified_adj_close_volume,True,5978,2002-07-30,2026-05-01
+TLT,eligible,v8_candidate_extension,v8 extension ready subset,ready_10y_plus_unified_adj_close_volume,True,5978,2002-07-30,2026-05-01
+MSTR,eligible,Layer 5 - High-beta single names,High-beta observation bucket,ready_10y_plus_unified_adj_close_volume,True,7016,1998-06-11,2026-05-01
+AFRM,excluded,Layer 5 - High-beta single names,NA,listed_history_lt_10y_or_mve2_not_ready,True,1331,2021-01-13,2026-05-01
+COIN,excluded,Layer 5 - High-beta single names,NA,listed_history_lt_10y_or_mve2_not_ready,True,1269,2021-04-14,2026-05-01
+CRWD,excluded,Layer 1 - Mega-cap tech / core technology,NA,listed_history_lt_10y_or_mve2_not_ready,True,1732,2019-06-12,2026-05-01
+LCID,excluded,Layer 5 - High-beta single names,NA,listed_history_lt_10y_or_mve2_not_ready,True,1411,2020-09-18,2026-05-01
+NET,excluded,Layer 1 - Mega-cap tech / core technology,NA,listed_history_lt_10y_or_mve2_not_ready,True,1667,2019-09-13,2026-05-01
+PLTR,excluded,Layer 1 - Mega-cap tech / core technology,NA,listed_history_lt_10y_or_mve2_not_ready,True,1403,2020-09-30,2026-05-01
+RIVN,excluded,Layer 5 - High-beta single names,NA,listed_history_lt_10y_or_mve2_not_ready,True,1122,2021-11-10,2026-05-01
+ROKU,excluded,Layer 5 - High-beta single names,NA,listed_history_lt_10y_or_mve2_not_ready,True,2159,2017-09-28,2026-05-01
+SNOW,excluded,Layer 1 - Mega-cap tech / core technology,NA,listed_history_lt_10y_or_mve2_not_ready,True,1413,2020-09-16,2026-05-01
+UBER,excluded,v8_candidate_extension,NA,listed_history_lt_10y_or_mve2_not_ready,True,1754,2019-05-10,2026-05-01
+UPST,excluded,Layer 5 - High-beta single names,NA,listed_history_lt_10y_or_mve2_not_ready,True,1349,2020-12-16,2026-05-01

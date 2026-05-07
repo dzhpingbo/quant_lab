@@ -1,0 +1,9 @@
+field,required_for_p2a,present_ticker_count,missing_ticker_count,present_rate
+date,True,51,0,1.0
+ticker,True,51,0,1.0
+adj_close,True,51,0,1.0
+volume,True,51,0,1.0
+open,False,51,0,1.0
+high,False,51,0,1.0
+low,False,51,0,1.0
+close,False,51,0,1.0

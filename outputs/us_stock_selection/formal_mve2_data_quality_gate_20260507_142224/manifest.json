@@ -1,0 +1,62 @@
+{
+  "run_id": "formal_mve2_data_quality_gate_20260507_142224",
+  "run_type": "formal_mve2_data_quality_gate",
+  "generated_at": "2026-05-07T14:22:25",
+  "git_commit": "b311cbba3ee2f205044b38402d5b90d83653bf10",
+  "script_path": "scripts/us_stock_selection/53_run_formal_mve2_data_quality_gate.py",
+  "input_paths": [
+    "data/unified_ohlcv/us_stock_selection",
+    "outputs/us_stock_selection/limited_mve2_20260502_142702",
+    "outputs/us_stock_selection/limited_mve2_validation_20260502_183555"
+  ],
+  "output_dir": "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224",
+  "generated_files": [
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/README.md",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/manifest.json",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/data_quality_gate_report.md",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/gate_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/universe_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/eligible_excluded_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/field_coverage_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/date_coverage_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/missingness_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/volume_liquidity_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/price_anomaly_summary.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/reproducibility_checklist.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/risk_flags.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/formal_mve2_readiness_decision.json",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/small_tables/input_file_inventory.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/small_tables/audit_metadata_conflicts.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/small_tables/ticker_gate_matrix.csv",
+    "outputs/us_stock_selection/formal_mve2_data_quality_gate_20260507_142224/small_tables/field_presence_matrix.csv"
+  ],
+  "data_source_policy": "audited unified adjusted OHLCV store only",
+  "fields_required": [
+    "date",
+    "ticker",
+    "adj_close",
+    "volume"
+  ],
+  "fields_optional": [
+    "open",
+    "high",
+    "low",
+    "close"
+  ],
+  "jump_threshold_abs_return": 0.5,
+  "low_volume_threshold": 100000,
+  "explicit_exclusions": [
+    "old qlib",
+    "old v8 cache",
+    "formal v9 output",
+    "v8.2 formal baseline output"
+  ],
+  "readiness_decision": "CONDITIONAL_NEEDS_REVIEW",
+  "can_enter_p3_formal_mve2_search_design": false,
+  "direct_v10_allowed": false,
+  "group4_hold_not_touched": true,
+  "strategy_search_executed": false,
+  "model_training_executed": false,
+  "formal_mve2_executed": false,
+  "v10_executed": false
+}
