@@ -1,0 +1,78 @@
+project_root: "E:/dzhwork/quant/quant_lab"
+python_executable: "C:/Users/Administrator/.conda/envs/aimodel/python.exe"
+
+output_root: "outputs/daily_quant_lab_runs"
+
+enabled_steps:
+  data_update: true
+  data_sanity: true
+  strategy: true
+  optional_report: false
+
+timeout_minutes:
+  data_update: 60
+  data_sanity: 30
+  strategy: 180
+  optional_report: 30
+
+data_update_command:
+  enabled: true
+  description: "v8.2 frozen provider safe refresh plus post-refresh coverage/freshness check"
+  data_download_performed: true
+  command:
+    - "{python_executable}"
+    - "scripts/automation/refresh_v82_provider_safe.py"
+    - "--provider-dir"
+    - "C:/Users/Administrator/.qlib/qlib_data/us_data_local_2026_v91_growth"
+    - "--json-out"
+    - "{run_dir}/refresh_v82_provider_safe.json"
+    - "--md-out"
+    - "{run_dir}/refresh_v82_provider_safe.md"
+  note: "Safe refresh for the current approved v8.2 frozen provider. It refreshes only the v8.2 required 36-ticker universe from the existing project yfinance/Yahoo data source, writes a temp provider first, validates coverage/freshness, backs up the current provider, then syncs only the approved provider files. It does not recompute scores, enter v9/MVE/v10, expand pools, search strategies, trade, or commit/push."
+
+strategy_run_command:
+  enabled: true
+  command:
+    - "{python_executable}"
+    - "scripts/us_stock_selection/51_run_v82_frozen_formal_audit.py"
+    - "--skip-bridge"
+  note: "Current approved frozen mainline: v8.2 Pool A top5_ytdcap80p_derisk100p formal replay audit."
+  side_effect_note: "The upstream approved script writes RUN_SUMMARY.md and NEXT_STEPS.md in the project root by design. This runner records git status before and after."
+
+data_sanity_command:
+  enabled: false
+  command: []
+  note: "No dedicated approved data quality script was selected for the daily frozen baseline. The runner performs directory freshness/count/size checks instead."
+
+optional_report_command:
+  enabled: false
+  command: []
+  note: "The frozen v8.2 strategy command already produces the formal report, workbook, verdict, and zip."
+
+data_sanity_paths:
+  - "data/raw/us/us_stock_selection"
+  - "data/features_cache/us_stock_selection"
+  - "data/unified_ohlcv/us_stock_selection"
+  - "C:/Users/Administrator/.qlib/qlib_data/us_data_local_2026_v91_growth"
+
+dependency_imports:
+  - "yaml"
+  - "numpy"
+  - "pandas"
+  - "yfinance"
+
+artifact_globs:
+  - "outputs/us_stock_selection/**/*"
+  - "outputs/qldtqqq_turning_points/**/*"
+  - "outputs/588200_latest_signal/**/*"
+  - "outputs/daily_quant_lab_runs/**/*"
+
+forbidden_paths:
+  - "docs/chatgpt_bridge/runs/run_20260502_222407"
+  - "docs/chatgpt_bridge/runs/run_20260503_172054"
+  - "scripts/qldtqqq_vix_strategy_comparison.py"
+
+approved_strategy_note: >-
+  v8.2 frozen formal audit passed and remains the current formal frozen baseline.
+  The daily automation must not search new strategies, enter v10, expand pools,
+  promote formal v9 or MVE2/P6 results, trade, connect broker APIs, or commit/push.
