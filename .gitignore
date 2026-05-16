@@ -1,6 +1,8 @@
 # Quant research outputs and heavy artifacts
 data/
 outputs/
+inputs/current_positions_*.csv
+!inputs/current_positions_*.template.csv
 *.zip
 *.parquet
 *.pkl

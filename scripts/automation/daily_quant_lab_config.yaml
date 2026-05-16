@@ -3,57 +3,136 @@ python_executable: "C:/Users/Administrator/.conda/envs/aimodel/python.exe"
 
 output_root: "outputs/daily_quant_lab_runs"
 
-enabled_steps:
-  data_update: true
-  data_sanity: true
-  strategy: true
-  optional_report: false
-
 timeout_minutes:
-  data_update: 60
-  data_sanity: 30
+  default: 60
+  data: 60
   strategy: 180
   optional_report: 30
 
-data_update_command:
+trading_packet:
   enabled: true
-  description: "v8.2 frozen provider safe refresh plus post-refresh coverage/freshness check"
-  data_download_performed: true
-  command:
-    - "{python_executable}"
-    - "scripts/automation/refresh_v82_provider_safe.py"
-    - "--provider-dir"
-    - "C:/Users/Administrator/.qlib/qlib_data/us_data_local_2026_v91_growth"
-    - "--json-out"
-    - "{run_dir}/refresh_v82_provider_safe.json"
-    - "--md-out"
-    - "{run_dir}/refresh_v82_provider_safe.md"
-  note: "Safe refresh for the current approved v8.2 frozen provider. It refreshes only the v8.2 required 36-ticker universe from the existing project yfinance/Yahoo data source, writes a temp provider first, validates coverage/freshness, backs up the current provider, then syncs only the approved provider files. It does not recompute scores, enter v9/MVE/v10, expand pools, search strategies, trade, or commit/push."
+  manual_check_required: true
+  sleeve_accounting_mode: separate_sleeves
+  default_order_type: LIMIT
+  default_time_in_force: DAY
+  buy_limit_buffer_pct: 0.005
+  sell_limit_buffer_pct: 0.005
+  use_adjusted_price_for_execution: false
+  fail_if_execution_price_missing: false
 
-strategy_run_command:
-  enabled: true
-  command:
-    - "{python_executable}"
-    - "scripts/us_stock_selection/51_run_v82_frozen_formal_audit.py"
-    - "--skip-bridge"
-  note: "Current approved frozen mainline: v8.2 Pool A top5_ytdcap80p_derisk100p formal replay audit."
-  side_effect_note: "The upstream approved script writes RUN_SUMMARY.md and NEXT_STEPS.md in the project root by design. This runner records git status before and after."
+  sleeves:
+    us_v82:
+      enabled: true
+      account_notional_usd: 100000
+      currency: USD
+      current_positions_csv: inputs/current_positions_us_v82.csv
+      provider_dir: C:/Users/Administrator/.qlib/qlib_data/us_data_local_2026_v91_growth
+      allow_fractional_shares: false
+      lot_size: 1
+      default_cash_asset: CASH
+      risk_off_action: SELL_TO_CASH
 
-data_sanity_command:
-  enabled: false
-  command: []
-  note: "No dedicated approved data quality script was selected for the daily frozen baseline. The runner performs directory freshness/count/size checks instead."
+    qld:
+      enabled: true
+      account_notional_usd: 50000
+      currency: USD
+      current_positions_csv: inputs/current_positions_qldtqqq.csv
+      symbol: QLD
+      allow_fractional_shares: false
+      lot_size: 1
+      default_cash_asset: CASH
+      risk_off_action: SELL_TO_CASH
 
-optional_report_command:
-  enabled: false
-  command: []
-  note: "The frozen v8.2 strategy command already produces the formal report, workbook, verdict, and zip."
+    tqqq:
+      enabled: true
+      account_notional_usd: 50000
+      currency: USD
+      current_positions_csv: inputs/current_positions_qldtqqq.csv
+      symbol: TQQQ
+      allow_fractional_shares: false
+      lot_size: 1
+      default_cash_asset: CASH
+      risk_off_action: SELL_TO_CASH
 
-data_sanity_paths:
-  - "data/raw/us/us_stock_selection"
-  - "data/features_cache/us_stock_selection"
-  - "data/unified_ohlcv/us_stock_selection"
-  - "C:/Users/Administrator/.qlib/qlib_data/us_data_local_2026_v91_growth"
+    etf_588200:
+      enabled: true
+      account_notional_cny: 100000
+      currency: CNY
+      current_positions_csv: inputs/current_positions_588200.csv
+      symbol: "588200"
+      allow_fractional_shares: false
+      lot_size: 100
+      default_cash_asset: CASH_CNY
+      risk_off_action: SELL_TO_CASH
+
+jobs:
+  - id: us_v82
+    enabled: true
+    output_subdir: job_us_v82
+    data_command:
+      - "{python_executable}"
+      - "scripts/automation/refresh_v82_provider_safe.py"
+      - "--provider-dir"
+      - "C:/Users/Administrator/.qlib/qlib_data/us_data_local_2026_v91_growth"
+      - "--json-out"
+      - "{job_dir}/refresh_v82_provider_safe.json"
+      - "--md-out"
+      - "{job_dir}/refresh_v82_provider_safe.md"
+    strategy_command:
+      - "{python_executable}"
+      - "scripts/us_stock_selection/51_run_v82_frozen_formal_audit.py"
+      - "--skip-bridge"
+    live_signal_command:
+      - "{python_executable}"
+      - "scripts/automation/run_us_v82_frozen_live_daily.py"
+      - "--output-dir"
+      - "{job_dir}"
+      - "--provider-dir"
+      - "C:/Users/Administrator/.qlib/qlib_data/us_data_local_2026_v91_growth"
+      - "--json-out"
+      - "{job_dir}/us_v82_live_target_holdings.json"
+      - "--md-out"
+      - "{job_dir}/us_v82_live_signal_summary.md"
+    metrics_extractor: us_v82_formal_audit
+    approved_strategy_note: "Current approved frozen mainline: v8.2 Pool A top5_ytdcap80p_derisk100p formal replay audit."
+    side_effect_note: "The upstream approved script writes RUN_SUMMARY.md and NEXT_STEPS.md in the project root by design."
+    timeout_minutes:
+      data: 60
+      strategy: 180
+
+  - id: qld_tqqq
+    enabled: true
+    output_subdir: job_qld_tqqq
+    strategy_command:
+      - "{python_executable}"
+      - "scripts/automation/run_qldtqqq_frozen_daily.py"
+      - "--output-dir"
+      - "{job_dir}"
+      - "--json-out"
+      - "{job_dir}/qldtqqq_job_summary.json"
+      - "--md-out"
+      - "{job_dir}/qldtqqq_job_summary.md"
+    metrics_extractor: qldtqqq_frozen_daily
+    approved_strategy_note: "Fixed replay only: QLD core_ma100_turn_b6_t7_trim70 + gate_adaptive_vt20_tr12_k12; TQQQ core_ma100_turn_b6_t6_trim70 + gate_loose_vt32_tr20_k18."
+    timeout_minutes:
+      strategy: 180
+
+  - id: "588200"
+    enabled: true
+    output_subdir: job_588200
+    strategy_command:
+      - "{python_executable}"
+      - "scripts/automation/run_588200_frozen_daily.py"
+      - "--output-dir"
+      - "{job_dir}"
+      - "--json-out"
+      - "{job_dir}/588200_job_summary.json"
+      - "--md-out"
+      - "{job_dir}/588200_job_summary.md"
+    metrics_extractor: etf_588200_frozen_daily
+    approved_strategy_note: "Fixed replay/latest signal only: factor_overlay__combo2__alpha_intraday_strength_60__alpha_td9_sell_pressure_4_9__mom60__vol20__vp95__fb55__fs45."
+    timeout_minutes:
+      strategy: 90
 
 dependency_imports:
   - "yaml"
@@ -73,6 +152,7 @@ forbidden_paths:
   - "scripts/qldtqqq_vix_strategy_comparison.py"
 
 approved_strategy_note: >-
-  v8.2 frozen formal audit passed and remains the current formal frozen baseline.
-  The daily automation must not search new strategies, enter v10, expand pools,
-  promote formal v9 or MVE2/P6 results, trade, connect broker APIs, or commit/push.
+  Daily automation runs only fixed approved/frozen research jobs: us_v82,
+  qld_tqqq, and 588200. It must not search new strategies, enter v10, expand
+  pools, promote formal v9 or MVE2/P6 results, trade, connect broker APIs, or
+  commit/push.
